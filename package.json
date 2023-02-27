@@ -6,7 +6,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.8.0",
+    "@tailwindcss/typography": "^0.5.9",
+    "aws-sdk": "^2.1323.0",
+    "axios": "^1.3.4",
+    "cloudinary": "^1.34.0",
+    "daisyui": "^2.50.2",
     "next": "latest",
+    "next-cloudinary": "^3.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
