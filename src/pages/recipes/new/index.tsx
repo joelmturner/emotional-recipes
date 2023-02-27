@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import { UploadResult } from "@/types";
 import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { useCallback, useRef, useState } from "react";
-import { supabase } from "@/lib/api";
+// import { supabase } from "@/lib/api";
 import { saveNewRecipe } from "@/lib/recipes";
 import axios from "axios";
 import { ImagePreview } from "@/components/ImagePreview";
