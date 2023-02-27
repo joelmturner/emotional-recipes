@@ -1,6 +1,5 @@
 import { Card } from "@/components/Card";
 import Layout from "@/components/Layout";
-import { recipeFixture } from "src/fixtures";
 import { getLatestSubmittedRecipes } from "@/lib/recipes";
 import { Recipe } from "@/types";
 

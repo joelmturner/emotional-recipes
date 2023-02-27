@@ -25,8 +25,11 @@ const CLOUDINARY_FONTS = [
 
 export default function NewRecipe() {
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const [imageUrl, setImageUrl] = useState();
-  const [overlayConfig, setOverlayConfig] = useState(null);
+  const [imageUrl, setImageUrl] = useState<string>();
+  const [overlayConfig, setOverlayConfig] = useState<Record<
+    string,
+    any
+  > | null>(null);
 
   const handleShare = useCallback(async () => {
     const imageSrc = imageContainerRef.current?.querySelector("img")?.src;

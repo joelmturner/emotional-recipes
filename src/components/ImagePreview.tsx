@@ -42,7 +42,7 @@ export function ImagePreview({
 
       <CldUploadWidget
         uploadPreset="ixvy6wbq"
-        options={{ folder: "emotional-recipes" }}
+        options={{ folder: "emotional-recipes" } as any}
         onUpload={handleOnUpload}
       >
         {({ open }) => {
