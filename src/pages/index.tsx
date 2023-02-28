@@ -10,9 +10,11 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
       <section className="flex flex-col gap-3">
         <div className="text-xl">Recipes</div>
         <div className="grid grid-cols-2 gap-4">
-          {recipes.map(recipe => (
-            <Card key={recipe.url} recipe={recipe} />
-          ))}
+          {recipes
+            .filter(recipe => !!recipe.url)
+            .map(recipe => (
+              <Card key={recipe.url} recipe={recipe} />
+            ))}
         </div>
       </section>
     </Layout>
