@@ -27,7 +27,7 @@ export function ImagePreview({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
+    <div className="flex flex-col items-center gap-6 w-full">
       {uploadResults?.info.secure_url ? (
         <CldImage
           src={uploadResults.info.public_id}

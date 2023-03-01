@@ -1,13 +1,12 @@
 import Layout from "@/components/Layout";
-import { UploadResult } from "@/types";
-import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { useCallback, useRef, useState } from "react";
-// import { supabase } from "@/lib/api";
 import { saveNewRecipe } from "@/lib/recipes";
 import axios from "axios";
 import { ImagePreview } from "@/components/ImagePreview";
-
-type FormData = { title: string; subtitle: string; steps: string[] };
+import { Share } from "@/components/Share";
+import { FormData } from "@/types";
+import { getConfig } from "@/lib/utils";
+import { HexColorPicker } from "react-colorful";
 
 // https://cloudinary.com/documentation/media_editor_reference#textoverlaysprops
 const CLOUDINARY_FONTS = [
@@ -21,11 +20,14 @@ const CLOUDINARY_FONTS = [
   "Open Sans",
   "Roboto",
   "Montserrat",
+  "Source Sans Pro",
 ];
 
 export default function NewRecipe() {
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const [imageUrl, setImageUrl] = useState<string>();
+  const [color, setColor] = useState("#ffffff");
+  const [bgColor, setBgColor] = useState("#000000");
   const [overlayConfig, setOverlayConfig] = useState<Record<
     string,
     any
@@ -33,16 +35,20 @@ export default function NewRecipe() {
 
   const handleShare = useCallback(async () => {
     const imageSrc = imageContainerRef.current?.querySelector("img")?.src;
-    console.log("imageSrc", imageSrc);
-    const { data } = await axios.post("/api/saveRecipe", {
-      name: new Date().valueOf(),
-      type: "application/json",
-      content: {
-        date: new Date().valueOf(),
-        url: imageSrc ?? imageUrl,
-      },
-    });
-    console.log("client data", data);
+
+    // only save if the image is different
+    if (imageUrl !== imageSrc) {
+      await axios.post("/api/saveRecipe", {
+        name: new Date().valueOf(),
+        type: "application/json",
+        content: {
+          date: new Date().valueOf(),
+          url: imageSrc ?? imageUrl,
+        },
+      });
+    }
+
+    setImageUrl(imageSrc);
   }, []);
 
   const handleSubmit = async (event: any) => {
@@ -53,6 +59,7 @@ export default function NewRecipe() {
 
     const steps: string[] = [];
     const output: Record<string, string> = {};
+
     keys.sort().forEach(key => {
       const el = event.target[`${key}`];
       if (el.id?.includes("step")) {
@@ -64,129 +71,33 @@ export default function NewRecipe() {
       }
     });
 
-    const result: FormData = {
-      title: output.title,
-      subtitle: `Move from ${output.from} to ${output.to}`,
+    const formDataResolved: FormData = {
+      title: output.title ?? null,
+      subtitle:
+        output.from && output.to
+          ? `Move from ${output.from} to ${output.to}`
+          : null,
       steps,
+      color: output.color,
+      backgroundColor: output.backgroundColor,
+      font: output.font,
+      lineHeight: parseInt(output.lineHeight),
+      bodyFontSize: parseInt(output.bodyFontSize),
     };
-    const config = {
-      //   rawTransformations: ["r_20"],
-      effects: [
-        {
-          aspect_ratio: "16.9",
-        },
-        {
-          background: "black",
-        },
-        {
-          gradientFade: true,
-        },
-        {
-          gradientFade: "symetric,x_0.75",
-        },
-        // {
-        //   radius: 20,
-        // },
-      ],
-      overlays: result
-        ? [
-            {
-              width: 540,
-              crop: "fit",
-              position: {
-                x: 20,
-                y: 20,
-                gravity: "north_west",
-              },
-              text: {
-                color: "white",
-                fontFamily: "Source Sans Pro",
-                fontSize: 26,
-                letterSpacing: 3,
-                text: encodeURIComponent(result.title),
-              },
-            },
-            {
-              width: 540,
-              crop: "fit",
-              position: {
-                x: 20,
-                y: 54,
-                gravity: "north_west",
-              },
-              text: {
-                color: "white",
-                fontFamily: "Source Sans Pro",
-                fontSize: 20,
-                letterSpacing: 1,
-                textTranform: "uppercase",
-                text: encodeURIComponent(result.subtitle),
-              },
-            },
-            {
-              width: 540,
-              crop: "fit",
-              position: {
-                x: 20,
-                y: 108,
-                gravity: "north_west",
-              },
-              text: {
-                color: "white",
-                fontFamily: "Source Sans Pro",
-                fontSize: 26,
-                letterSpacing: 3,
-                lineSpacing: 26,
-                text: encodeURIComponent(
-                  result.steps
-                    .map((step, index) => `${index + 1}. ${step}`)
-                    .join("\n")
-                ),
-              },
-            },
-          ]
-        : undefined,
-    };
-    console.log("result", result);
 
-    console.log("steps", steps);
-    console.log("output", output);
-    console.log("config", config);
-
-    // const { error } = await supabase.from("recipes").insert({
-    //   id: 1,
-    //   url: uploadResults?.info?.secure_url,
-    //   config: JSON.stringify(config),
-    // });
-
-    // console.log("error", error);
-
+    const config = getConfig(formDataResolved);
     setOverlayConfig(config);
   };
 
-  //   function handleOnUpload(
-  //     result: UploadResult,
-  //     widget: Record<string, any>
-  //   ): void {
-  //     console.log("result", result);
-  //     console.log("widget", widget);
-  //     setUploadResults(result);
-
-  //     // close the upload widget
-  //     widget.close();
-  //   }
-
   return (
     <Layout>
-      <div className="p-4 grid grid-rows-[1fr_2fr_3fr] gap-3 h-screen">
+      <div className="p-4 grid grid-rows-[min-content_2fr_3fr] gap-3 h-full">
         <div className="flex justify-end">
-          <button className="btn" onClick={handleShare}>
-            share
-          </button>
+          <Share url={imageUrl ?? ""} handleShare={handleShare} />
         </div>
 
         <div
-          className="flex flex-col justify-center items-center"
+          className="flex flex-col justify-center h-full items-center"
           ref={imageContainerRef}
         >
           <ImagePreview
@@ -195,9 +106,12 @@ export default function NewRecipe() {
           />
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4"
+        >
           <div>
-            <div className="form-control w-full max-w-xs">
+            <div className="form-control w-full max-w-md">
               <label className="label" htmlFor="title">
                 <span className="label-text">Title</span>
               </label>
@@ -205,7 +119,7 @@ export default function NewRecipe() {
                 id="title"
                 type="text"
                 placeholder="Optional Title"
-                className="input input-bordered w-full max-w-xs"
+                className="input input-bordered w-full max-w-md"
               />
             </div>
 
@@ -233,7 +147,7 @@ export default function NewRecipe() {
             </div>
           </div>
 
-          <div className="form-control w-full max-w-xs grid-cols-1 gap-3">
+          <div className="form-control w-full grid-cols-1 gap-3">
             <div>
               <label className="label" htmlFor="step_1">
                 <span className="label-text">Step One</span>
@@ -245,7 +159,7 @@ export default function NewRecipe() {
                   placeholder="step one"
                   name="step_1"
                   id="step_1"
-                  className="input input-bordered"
+                  className="input input-bordered w-full"
                 />
               </label>
             </div>
@@ -261,7 +175,7 @@ export default function NewRecipe() {
                   placeholder="step two"
                   name="step_2"
                   id="step_2"
-                  className="input input-bordered"
+                  className="input input-bordered w-full"
                 />
               </label>
             </div>
@@ -277,15 +191,99 @@ export default function NewRecipe() {
                   placeholder="step three"
                   name="step_3"
                   id="step_3"
-                  className="input input-bordered"
+                  className="input input-bordered w-full"
                 />
               </label>
             </div>
           </div>
 
-          <button className="btn btn-outline" type="submit">
-            Update
-          </button>
+          <div className="flex flex-col gap-3">
+            <label className="label" htmlFor="font">
+              Font family
+            </label>
+            <select className="select w-full max-w-xs" id="font">
+              {CLOUDINARY_FONTS.map(font => (
+                <option
+                  key={font}
+                  value={font}
+                  selected={font === "Source Sans Pro"}
+                >
+                  {font}
+                </option>
+              ))}
+            </select>
+
+            <div className="flex flex-col md:flex-row gap-3">
+              <div>
+                <label className="label">Text color</label>
+                <div className="collapse">
+                  <input type="checkbox" />
+                  <div className="collapse-title text-xl font-medium">
+                    <div
+                      className="rounded w-16 h-6 border"
+                      style={{ backgroundColor: color }}
+                    ></div>
+                  </div>
+                  <div className="collapse-content">
+                    <HexColorPicker color={color} onChange={setColor} />
+                    <input type="hidden" id="color" value={color} />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Background color</label>
+                <div className="collapse">
+                  <input type="checkbox" />
+                  <div className="collapse-title text-xl font-medium">
+                    <div
+                      className="rounded w-16 h-6 border"
+                      style={{ backgroundColor: bgColor }}
+                    ></div>
+                  </div>
+                  <div className="collapse-content">
+                    <HexColorPicker color={bgColor} onChange={setBgColor} />
+                    <input type="hidden" id="backgroundColor" value={bgColor} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div>
+              <label className="label" htmlFor="bodyFontSize">
+                Steps size
+              </label>
+              <input
+                id="bodyFontSize"
+                type="range"
+                min="1"
+                max="50"
+                className="range"
+                placeholder="26"
+              />
+            </div>
+            <div>
+              <label className="label" htmlFor="lineHeight">
+                Line Spacing
+              </label>
+              <input
+                id="lineHeight"
+                type="range"
+                min="1"
+                max="100"
+                className="range"
+                placeholder="26"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-center col-span-2">
+            <button className="btn btn-outline" type="submit">
+              Update preview
+            </button>
+          </div>
         </form>
       </div>
     </Layout>

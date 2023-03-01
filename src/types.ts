@@ -36,3 +36,14 @@ export interface UploadResultInfo {
   path: string;
   thumbnail_url: string;
 }
+
+export type FormData = {
+  title: string | null;
+  subtitle: string | null;
+  steps: string[];
+  color: string;
+  backgroundColor: string;
+  font: string;
+  lineHeight: number;
+  bodyFontSize: number;
+};
