@@ -4,20 +4,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="grid grid-rows-[min-content_1fr_min-content] gap-3 antialiased h-screen text-gray-300">
-        <div className="navbar bg-base-300 justify-start">
-          <Link href="/" className="text-xl px-3">
+        <div className="navbar bg-base-300 justify-between px-6">
+          <Link href="/" className="text-xl">
             Emotional Recipes
           </Link>
-          <ul>
+
+          <ul className="flex gap-3">
             <li>
-              <div>
-                <Link
-                  href="/recipes/new"
-                  className="btn btn-primary btn-xs normal-case"
-                >
-                  New Recipe
-                </Link>
-              </div>
+              <Link
+                href="/recipes/new"
+                className="btn btn-primary btn-xs normal-case"
+              >
+                New Recipe
+              </Link>
+            </li>
+            <li>
+              <Link href="/recipes" className="">
+                Recipes
+              </Link>
             </li>
           </ul>
         </div>
