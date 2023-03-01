@@ -7,14 +7,14 @@ export default function Recipes({ recipes }: { recipes: Recipe[] }) {
   return (
     <Layout>
       <h1 className="text-4xl font-bold px-6 my-6">Recipes</h1>
-      <div className="grid grid-cols-3 gap-6 px-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
         {recipes.map((recipe, index) => (
           <div
             key={recipe.date}
             id={`item${index + 1}`}
             className="carousel-item h-full"
           >
-            <Card key={recipe.url} recipe={recipe} eager={index === 0} />
+            <Card key={recipe.url} recipe={recipe} eager={index < 3} />
           </div>
         ))}
       </div>
