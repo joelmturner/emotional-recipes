@@ -1,5 +1,13 @@
 import { FormData } from "@/types";
 
+export const IMAGE_SIZE = {
+  width: 1280,
+  height: 720,
+};
+
+const MAX_TEXT_WIDTH = IMAGE_SIZE.width * 0.9;
+const TEXT_X = IMAGE_SIZE.width * 0.05;
+
 function getCloudinaryColor(color: string) {
   return color.replace("#", "rgb:");
 }
@@ -30,53 +38,54 @@ export function getConfig(formData: FormData) {
     overlays: formData
       ? [
           formData.title && {
-            width: 540,
+            width: MAX_TEXT_WIDTH,
             crop: "fit",
             position: {
-              x: 20,
-              y: 20,
+              x: TEXT_X,
+              y: IMAGE_SIZE.height * 0.1,
               gravity: "north_west",
             },
             text: {
               color,
               fontFamily: formData.font,
-              fontSize: 26,
+              fontSize: IMAGE_SIZE.width * 0.05,
               letterSpacing: 3,
               fontWeight: "bold",
               text: encodeURIComponent(formData.title),
             },
           },
           formData.subtitle && {
-            width: 540,
+            width: MAX_TEXT_WIDTH,
             crop: "fit",
             position: {
-              x: 20,
-              y: 54,
+              x: TEXT_X,
+              y: IMAGE_SIZE.height * 0.2,
               gravity: "north_west",
             },
             text: {
               color,
               fontFamily: formData.font,
-              fontSize: 20,
+              fontSize: IMAGE_SIZE.width * 0.03,
+              fontStyle: "italic",
               letterSpacing: 1,
-              textTranform: "uppercase",
+              textTransform: "uppercase",
               text: encodeURIComponent(formData.subtitle),
             },
           },
           {
-            width: 540,
+            width: MAX_TEXT_WIDTH,
             crop: "fit",
             position: {
-              x: 20,
-              y: 108,
+              x: TEXT_X,
+              y: IMAGE_SIZE.height * 0.35,
               gravity: "north_west",
             },
             text: {
               color,
               fontFamily: formData.font,
-              fontSize: formData.bodyFontSize ?? 26,
+              fontSize: formData.bodyFontSize ?? IMAGE_SIZE.width * 0.05,
               letterSpacing: 1,
-              lineSpacing: formData.lineHeight ?? 20,
+              lineSpacing: formData.lineHeight ?? IMAGE_SIZE.width * 0.03,
               text: encodeURIComponent(
                 formData.steps
                   .map((step, index) => `${index + 1}. ${step}`)

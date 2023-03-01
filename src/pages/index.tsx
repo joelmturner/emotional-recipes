@@ -12,7 +12,7 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
           <div className="flex flex-col justify-center w-full md:w-1/2">
             <div className="carousel">
               {recipes
-                .filter(recipe => !!recipe.url)
+                ?.filter(recipe => !!recipe.url)
                 .map((recipe, index) => (
                   <div
                     id={`item${index + 1}`}
@@ -25,7 +25,7 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
 
             <div className="flex justify-center w-full py-2 gap-2">
               {recipes
-                .filter(recipe => !!recipe.url)
+                ?.filter(recipe => !!recipe.url)
                 .map((_, index) => (
                   <a key={index} href={`#item${index + 1}`}>
                     <div className="w-2 h-2 rounded-full bg-accent"></div>

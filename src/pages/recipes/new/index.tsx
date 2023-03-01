@@ -1,6 +1,5 @@
 import Layout from "@/components/Layout";
 import { useCallback, useRef, useState } from "react";
-import { saveNewRecipe } from "@/lib/recipes";
 import axios from "axios";
 import { ImagePreview } from "@/components/ImagePreview";
 import { Share } from "@/components/Share";
@@ -37,19 +36,17 @@ export default function NewRecipe() {
     const imageSrc = imageContainerRef.current?.querySelector("img")?.src;
 
     // only save if the image is different
-    if (imageUrl !== imageSrc) {
+    if (imageSrc && imageUrl !== imageSrc) {
       await axios.post("/api/saveRecipe", {
-        name: new Date().valueOf(),
-        type: "application/json",
         content: {
           date: new Date().valueOf(),
           url: imageSrc ?? imageUrl,
         },
       });
-    }
 
-    setImageUrl(imageSrc);
-  }, []);
+      setImageUrl(imageSrc);
+    }
+  }, [imageUrl]);
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -201,13 +198,13 @@ export default function NewRecipe() {
             <label className="label" htmlFor="font">
               Font family
             </label>
-            <select className="select w-full max-w-xs" id="font">
+            <select
+              className="select w-full max-w-xs"
+              id="font"
+              defaultValue="Source Sans Pro"
+            >
               {CLOUDINARY_FONTS.map(font => (
-                <option
-                  key={font}
-                  value={font}
-                  selected={font === "Source Sans Pro"}
-                >
+                <option key={font} value={font}>
                   {font}
                 </option>
               ))}
@@ -258,10 +255,10 @@ export default function NewRecipe() {
               <input
                 id="bodyFontSize"
                 type="range"
-                min="1"
-                max="50"
+                min="10"
+                max="100"
                 className="range"
-                placeholder="26"
+                placeholder="40"
               />
             </div>
             <div>
@@ -271,10 +268,10 @@ export default function NewRecipe() {
               <input
                 id="lineHeight"
                 type="range"
-                min="1"
+                min="10"
                 max="100"
                 className="range"
-                placeholder="26"
+                placeholder="40"
               />
             </div>
           </div>

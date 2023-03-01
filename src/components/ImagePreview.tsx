@@ -31,11 +31,11 @@ export function ImagePreview({
       {uploadResults?.info.secure_url ? (
         <CldImage
           src={uploadResults.info.public_id}
-          width="533"
-          height="300"
+          width="1280"
+          height="720"
           crop="fill"
           alt="emotional recipe background image"
-          className="aspect-video rounded-xl"
+          className="aspect-video rounded-xl w-[533px] h-[300px]"
           {...overlayConfig}
         />
       ) : null}

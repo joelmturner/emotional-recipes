@@ -31,11 +31,10 @@ export function Share({ handleShare, url }: ShareProps) {
   });
 
   const handleOpenShare = useCallback(() => {
-    setShareOpen(prev => !prev);
-
-    if (shareOpen) {
+    if (!shareOpen) {
       handleShare();
     }
+    setShareOpen(prev => !prev);
   }, [shareOpen]);
 
   return (
