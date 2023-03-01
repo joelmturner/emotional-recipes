@@ -14,7 +14,7 @@ export function Card({
       width="533"
       height="300"
       alt="emotional recipe image"
-      className="aspect-video rounded-xl"
+      className="aspect-video rounded-xl w-full max-w-[533px] object-contain"
       priority={eager}
     />
   );

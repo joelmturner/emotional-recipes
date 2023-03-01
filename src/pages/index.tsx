@@ -7,31 +7,9 @@ import Link from "next/link";
 export default function Home({ recipes }: { recipes: Recipe[] }) {
   return (
     <Layout>
-      <div className="hero bg-base-200">
+      <div className="hero bg-base-200 h-1/2">
         <div className="hero-content flex-col lg:flex-row">
-          <div className="flex flex-col justify-center w-full md:w-1/2">
-            <div className="carousel">
-              {recipes.map((recipe, index) => (
-                <div
-                  key={recipe.date}
-                  id={`item${index + 1}`}
-                  className="carousel-item justify-center w-full"
-                >
-                  <Card key={recipe.url} recipe={recipe} eager={index === 0} />
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-center w-full py-2 gap-2">
-              {recipes.map((recipe, index) => (
-                <a key={recipe.date} href={`#item${index + 1}`}>
-                  <div className="w-2 h-2 rounded-full bg-accent"></div>
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div>
+          <div className="w-full md:w-1/3">
             <h1 className="text-5xl font-bold">Emotional Wayfinding</h1>
             <p className="py-6">
               A tool to help you find your way through your emotions.
@@ -40,10 +18,22 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
               Create a new recipe
             </Link>
           </div>
+
+          <div className="h-[300px] carousel carousel-vertical rounded-box">
+            {recipes.map((recipe, index) => (
+              <div
+                key={recipe.date}
+                id={`item${index + 1}`}
+                className="carousel-item h-full"
+              >
+                <Card key={recipe.url} recipe={recipe} eager={index === 0} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="p-6 prose mx-auto">
+      <div className="p-6 prose mx-auto" id="mainContent">
         <h2>What is this?</h2>
         <p>
           These recipes are meant to be a helpful reminder when things are a

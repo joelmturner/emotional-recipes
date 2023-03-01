@@ -35,7 +35,7 @@ export function ImagePreview({
           height="720"
           crop="fill"
           alt="emotional recipe background image"
-          className="aspect-video rounded-xl w-[533px] h-[300px]"
+          className="aspect-video rounded-xl w-full max-w-[800px]"
           {...overlayConfig}
         />
       ) : null}

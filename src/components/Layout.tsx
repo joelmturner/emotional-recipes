@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         <main className="grow h-full pb-4">{children}</main>
 
-        <footer className="footer items-center p-4 bg-neutral text-neutral-content justify-between">
+        <footer className="footer items-center p-4 mt-36 lg:mt-12 bg-neutral text-neutral-content justify-between">
           <div className="items-center grid-flow-col">
             <p className="text-gray-500">
               Made with <span className="text-accent">♡</span> by{" "}
