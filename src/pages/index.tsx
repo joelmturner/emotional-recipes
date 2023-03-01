@@ -11,26 +11,23 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
         <div className="hero-content flex-col lg:flex-row">
           <div className="flex flex-col justify-center w-full md:w-1/2">
             <div className="carousel">
-              {recipes
-                ?.filter(recipe => !!recipe.url)
-                .map((recipe, index) => (
-                  <div
-                    id={`item${index + 1}`}
-                    className="carousel-item justify-center w-full"
-                  >
-                    <Card key={recipe.url} recipe={recipe} />
-                  </div>
-                ))}
+              {recipes.map((recipe, index) => (
+                <div
+                  key={recipe.date}
+                  id={`item${index + 1}`}
+                  className="carousel-item justify-center w-full"
+                >
+                  <Card key={recipe.url} recipe={recipe} eager={index === 0} />
+                </div>
+              ))}
             </div>
 
             <div className="flex justify-center w-full py-2 gap-2">
-              {recipes
-                ?.filter(recipe => !!recipe.url)
-                .map((_, index) => (
-                  <a key={index} href={`#item${index + 1}`}>
-                    <div className="w-2 h-2 rounded-full bg-accent"></div>
-                  </a>
-                ))}
+              {recipes.map((recipe, index) => (
+                <a key={recipe.date} href={`#item${index + 1}`}>
+                  <div className="w-2 h-2 rounded-full bg-accent"></div>
+                </a>
+              ))}
             </div>
           </div>
 
@@ -82,10 +79,11 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
 
 export async function getStaticProps() {
   const recipes = await getLatestSubmittedRecipes();
+  const filteredRecipes = recipes.filter(recipe => !!recipe.url).slice(0, 3);
 
   return {
     props: {
-      recipes,
+      recipes: filteredRecipes,
     },
     revalidate: 10, // In seconds
   };

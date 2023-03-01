@@ -1,3 +1,4 @@
+import { Recipe } from "@/types";
 import { s3 } from "@/lib/api";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { v2 as cloudinary } from "cloudinary";
@@ -9,7 +10,7 @@ cloudinary.config({
   secure: true,
 });
 
-export async function getLatestSubmittedRecipes() {
+export async function getLatestSubmittedRecipes(): Promise<Recipe[]> {
   const params = {
     Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME as string,
     Key: "recipeList.json",

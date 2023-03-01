@@ -1,7 +1,13 @@
 import { Recipe } from "@/types";
 import Image from "next/image";
 
-export function Card({ recipe }: { recipe: Recipe }) {
+export function Card({
+  recipe,
+  eager = false,
+}: {
+  recipe: Recipe;
+  eager: boolean;
+}) {
   return (
     <Image
       src={recipe.url}
@@ -9,6 +15,7 @@ export function Card({ recipe }: { recipe: Recipe }) {
       height="300"
       alt="emotional recipe background image"
       className="aspect-video rounded-xl"
+      priority={eager}
     />
   );
 }
