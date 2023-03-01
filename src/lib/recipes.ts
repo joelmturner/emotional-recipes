@@ -10,7 +10,9 @@ cloudinary.config({
   secure: true,
 });
 
-export async function getLatestSubmittedRecipes(): Promise<Recipe[]> {
+export async function getLatestSubmittedRecipes(
+  limit?: number
+): Promise<Recipe[]> {
   const params = {
     Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME as string,
     Key: "recipeList.json",
@@ -20,5 +22,13 @@ export async function getLatestSubmittedRecipes(): Promise<Recipe[]> {
   const response = await s3.send(command);
   const contents = await response.Body?.transformToString("utf-8");
 
-  return contents ? JSON.parse(contents) : null;
+  const results =
+    contents &&
+    JSON.parse(contents)?.filter((content: Recipe) => !!content.url);
+
+  if (limit) {
+    return results?.slice(0, limit);
+  }
+
+  return results ?? null;
 }

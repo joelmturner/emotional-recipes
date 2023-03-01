@@ -78,12 +78,11 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
 }
 
 export async function getStaticProps() {
-  const recipes = await getLatestSubmittedRecipes();
-  const filteredRecipes = recipes.filter(recipe => !!recipe.url).slice(0, 3);
+  const recipes = await getLatestSubmittedRecipes(3);
 
   return {
     props: {
-      recipes: filteredRecipes,
+      recipes,
     },
     revalidate: 10, // In seconds
   };

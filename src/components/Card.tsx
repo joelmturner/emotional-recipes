@@ -13,7 +13,7 @@ export function Card({
       src={recipe.url}
       width="533"
       height="300"
-      alt="emotional recipe background image"
+      alt="emotional recipe image"
       className="aspect-video rounded-xl"
       priority={eager}
     />
