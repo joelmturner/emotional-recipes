@@ -5,7 +5,6 @@ export default function Document() {
   return (
     <Html data-theme="forest">
       <Head>
-        <title>Emotional Recipes</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
