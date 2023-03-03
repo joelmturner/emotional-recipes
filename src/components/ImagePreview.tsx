@@ -100,10 +100,10 @@ export function ImagePreview({
       <Dialog
         isOpen={showDialog}
         onDismiss={() => setShowDialog(false)}
-        className="flex flex-col gap-3 h-full max-h-[70vh] overflow-y-auto rounded-lg"
+        className="flex flex-col gap-3 h-full max-h-[85vh] rounded-lg"
       >
         <button
-          className="btn btn-circle btn-sm close-button self-end"
+          className="btn btn-circle btn-xs md:btn-sm close-button self-end absolute top-2 right-2"
           onClick={() => setShowDialog(false)}
         >
           <svg
@@ -122,7 +122,7 @@ export function ImagePreview({
           </svg>
         </button>
         {storedImages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-1 p-1 md:mt-3 lg:mt-6 overflow-y-auto">
             {storedImages.map(image => (
               <CldImage
                 key={image.public_id}

@@ -169,8 +169,8 @@ export default function NewRecipe() {
 
   return (
     <Layout>
-      <div className="grid grid-rows-[min-content_min-content_auto] gap-3 h-full p-4">
-        <div className="flex justify-end">
+      <div className="grid grid-rows-[min-content_min-content_auto] gap-3 h-full mt-3">
+        <div className="flex container justify-end">
           <Share
             url={imageUrl ?? ""}
             handleShare={handleShare}
@@ -324,7 +324,7 @@ export default function NewRecipe() {
 
               <div className="flex gap-4">
                 <button
-                  className="btn gap-2 btn-sm"
+                  className="btn gap-2 btn-xs md:btn-sm"
                   onClick={() => setStepsLength(prev => prev + 1)}
                 >
                   <svg
@@ -345,7 +345,7 @@ export default function NewRecipe() {
                 </button>
 
                 <button
-                  className="btn gap-2 btn-sm"
+                  className="btn gap-2 btn-xs md:btn-sm"
                   onClick={() => setStepsLength(prev => prev - 1)}
                   disabled={stepsLength < 2}
                 >

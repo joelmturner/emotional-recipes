@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <div className="grid grid-rows-[min-content_1fr_min-content] gap-3 antialiased h-screen text-base-content">
+      <div className="grid grid-rows-[min-content_1fr_min-content] gap-3 antialiased h-screen text-base-content overflow-y-auto">
         <div className="navbar px-0 border border-b border-base-300">
           <div className="flex gap-4 items-center justify-between container mx-auto">
             <Link
