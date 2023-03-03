@@ -1,6 +1,5 @@
 import Layout from "@/components/Layout";
 import { useCallback, useMemo, useRef, useState } from "react";
-import axios from "axios";
 import { ImagePreview } from "@/components/ImagePreview";
 import { Share } from "@/components/Share";
 import { FormData } from "@/types";
