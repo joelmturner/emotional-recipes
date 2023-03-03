@@ -64,8 +64,11 @@ export default function NewRecipe() {
 
     // only save if the image is different
     if (imageSrc && imageUrl !== imageSrc) {
-      await axios.post("/api/saveRecipe", {
-        url: imageSrc ?? imageUrl,
+      await fetch("/api/saveRecipe", {
+        method: "POST",
+        body: JSON.stringify({
+          url: imageSrc ?? imageUrl,
+        }),
       });
 
       setImageUrl(imageSrc);
@@ -266,24 +269,37 @@ export default function NewRecipe() {
                   >
                     {!!generatedSteps ? "Regenerate Steps" : "Generate Steps"}
                   </button>
-                  <div
-                    className="tooltip"
-                    data-tip="AI generated. Fill in From emotion and To emotion for better results."
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
+                  <div className="dropdown dropdown-right dropdown-end">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-circle btn-ghost btn-xs text-info"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                      />
-                    </svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 stroke-current"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                    </label>
+                    <div
+                      tabIndex={0}
+                      className="card compact dropdown-content shadow bg-base-300 rounded-box w-64"
+                    >
+                      <div className="card-body not-prose">
+                        <h2 className="card-title">AI generated</h2>
+                        <p>
+                          Fill in From emotion and To emotion for better
+                          results.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

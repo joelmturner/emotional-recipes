@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import axios from "axios";
 import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { Resource, UploadResult } from "@/types";
 import { Dialog } from "@reach/dialog";
@@ -25,9 +24,10 @@ export function ImagePreview({
     setShowDialog(true);
 
     if (storedImages.length > 0) return;
-    const images = await axios.post("/api/getBaseImages");
-    setStoredImages(images.data.data);
-  }, []);
+    const response = await fetch("/api/getBaseImages", { method: "POST" });
+    const { data } = await response.json();
+    setStoredImages(data);
+  }, [storedImages]);
 
   function handleOnUpload(
     result: UploadResult,

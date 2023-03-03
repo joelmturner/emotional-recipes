@@ -19,10 +19,16 @@ import { useClickAway, useCopyToClipboard } from "react-use";
 type ShareProps = {
   url: string;
   disabled: boolean;
-  handleShare: () => void;
+  useButton?: boolean;
+  handleShare?: () => void;
 };
 
-export function Share({ handleShare, url, disabled = false }: ShareProps) {
+export function Share({
+  handleShare,
+  url,
+  disabled = false,
+  useButton = true,
+}: ShareProps) {
   const ref = useRef(null);
   const [state, copyToClipboard] = useCopyToClipboard();
   const [shareOpen, setShareOpen] = useState(false);
@@ -32,18 +38,22 @@ export function Share({ handleShare, url, disabled = false }: ShareProps) {
   });
 
   const handleOpenShare = useCallback(() => {
-    if (!shareOpen) {
+    if (!shareOpen && handleShare) {
       handleShare();
     }
     setShareOpen(prev => !prev);
   }, [shareOpen]);
 
+  const showContents = !useButton || (useButton && shareOpen);
+
   return (
     <div className="flex flex-col gap-2 items-end">
-      <button className="btn" onClick={handleOpenShare} disabled={disabled}>
-        share
-      </button>
-      {shareOpen && (
+      {useButton ? (
+        <button className="btn" onClick={handleOpenShare} disabled={disabled}>
+          share
+        </button>
+      ) : null}
+      {showContents && (
         <div className="flex flex-col gap-1">
           <div className="flex gap-3 items-center">
             <TwitterShareButton url={url}>
