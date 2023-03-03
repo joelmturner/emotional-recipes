@@ -18,10 +18,11 @@ import { useClickAway, useCopyToClipboard } from "react-use";
 
 type ShareProps = {
   url: string;
+  disabled: boolean;
   handleShare: () => void;
 };
 
-export function Share({ handleShare, url }: ShareProps) {
+export function Share({ handleShare, url, disabled = false }: ShareProps) {
   const ref = useRef(null);
   const [state, copyToClipboard] = useCopyToClipboard();
   const [shareOpen, setShareOpen] = useState(false);
@@ -39,7 +40,7 @@ export function Share({ handleShare, url }: ShareProps) {
 
   return (
     <div className="flex flex-col gap-2 items-end">
-      <button className="btn" onClick={handleOpenShare}>
+      <button className="btn" onClick={handleOpenShare} disabled={disabled}>
         share
       </button>
       {shareOpen && (

@@ -17,8 +17,6 @@ export function ImagePreview({
     result: UploadResult,
     widget: Record<string, any>
   ): void {
-    console.log("result", result);
-    console.log("widget", widget);
     setUploadResults(result);
     setImageUrl(result.info.secure_url);
 
@@ -51,7 +49,10 @@ export function ImagePreview({
             open();
           }
           return (
-            <button onClick={handleOnClick}>
+            <button
+              className={uploadResults ? "link link-hover" : "btn btn-accent"}
+              onClick={handleOnClick}
+            >
               {uploadResults ? "Upload a new image" : "Upload an image"}
             </button>
           );
