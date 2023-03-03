@@ -13,7 +13,7 @@ const PADDING_LEFT = Math.ceil(IMAGE_SIZE.width * 0.05);
 const FONT_SIZE_SM = Math.ceil(IMAGE_SIZE.width * 0.03);
 const FONT_SIZE_MD = Math.ceil(IMAGE_SIZE.width * 0.05);
 const INITIAL_STEP_SPACING = Math.ceil(IMAGE_SIZE.width * 0.046);
-const LIST_ITEM_SPACING = Math.ceil(IMAGE_SIZE.width * 0.035);
+const LIST_ITEM_SPACING = Math.ceil(IMAGE_SIZE.width * 0.0375);
 
 function getCloudinaryColor(color: string) {
   return color.replace("#", "rgb:");
@@ -29,8 +29,7 @@ function resolveStepString(step: string, index: number): string {
 }
 
 function getLineLengthMultiplier(fontSize: number, step: string): number {
-  // 1.5 is the default line height
-  return Math.ceil((step.length * fontSize) / (MAX_TEXT_WIDTH * 1.75));
+  return Math.ceil((step.length * fontSize) / (MAX_TEXT_WIDTH * 2.15));
 }
 
 export function getConfig(formData: FormData) {
@@ -86,18 +85,14 @@ export function getConfig(formData: FormData) {
   const steps =
     formData.steps?.reduce((finalSteps, step, index) => {
       // crude approximation of text length vs line wrapping
-      // TODO JT still seems off, come back later
       const lineWrapMultiplier = getLineLengthMultiplier(
         fontSize,
         index > 0 ? formData.steps[index - 1] : step
       );
 
       const prevY = finalSteps?.[index - 1]?.position.y ?? 0;
-      const y = Math.ceil(
-        prevY +
-          (fontSize + lineSpacing) * lineWrapMultiplier +
-          LIST_ITEM_SPACING
-      );
+      const prevHeight = (fontSize + lineSpacing + 10) * lineWrapMultiplier;
+      const y = Math.ceil(prevY + prevHeight + LIST_ITEM_SPACING);
 
       finalSteps.push({
         width: MAX_TEXT_WIDTH,
