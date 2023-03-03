@@ -22,7 +22,7 @@ function getCloudinaryColor(color: string) {
 function resolveStepString(step: string, index: number): string {
   let output = step;
   if (!step.startsWith(`${index}`)) {
-    output = `${index + 1}. ${step}`;
+    output = `${index}. ${step}`;
   }
 
   return encodeURIComponent(output);

@@ -23,7 +23,10 @@ const CLOUDINARY_FONTS = [
 ];
 
 export default function NewRecipe() {
-  const [loading, setLoading] = useState(false);
+  const [emotionalJourney, setEmotionalJourney] = useState({
+    from: "",
+    to: "",
+  });
   const [generatedSteps, setGeneratedSteps] = useState("");
   const [stepsLength, setStepsLength] = useState(3);
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -62,10 +65,7 @@ export default function NewRecipe() {
     // only save if the image is different
     if (imageSrc && imageUrl !== imageSrc) {
       await axios.post("/api/saveRecipe", {
-        content: {
-          date: new Date().valueOf(),
-          url: imageSrc ?? imageUrl,
-        },
+        url: imageSrc ?? imageUrl,
       });
 
       setImageUrl(imageSrc);
@@ -88,14 +88,13 @@ export default function NewRecipe() {
       } else if (el.value) {
         const id = el.id;
         output[id] = el?.value;
-        console.log(el?.value);
       }
     });
 
     const formDataResolved: FormData = {
       title: output.title ?? null,
       subtitle:
-        output.from && output.to
+        !!output.from && !!output.to
           ? `Move from ${output.from} to ${output.to}`
           : null,
       steps,
@@ -112,21 +111,19 @@ export default function NewRecipe() {
 
   const prompt = `
   For moving from emotional state "${
-    overlayConfig?.from ?? "anxious"
+    emotionalJourney.from || "anxious"
   }" to emotional state "${
-    overlayConfig?.to ?? "calm"
+    emotionalJourney.to || "calm"
   }", identify the area of expertise that a coach would need to help with the request.
   Once the area of expertise is identified generate 3 steps for someone to do right now to move from state to state.
   Don't output the area of expertise, only return the steps. Make sure each step is under 100 characters and is clearly labeled "1. " and "2. "
   `;
 
-  console.log("overlayConfig", overlayConfig);
-
   const generateSteps = async (e: any) => {
     e.preventDefault();
     setGeneratedSteps("");
     setStepsLength(0);
-    setLoading(true);
+
     const response = await fetch("/api/generate", {
       method: "POST",
       headers: {
@@ -163,14 +160,13 @@ export default function NewRecipe() {
       ...prev,
       steps: generatedSteps.split("\n"),
     }));
-    setLoading(false);
   };
 
   const fieldsEnabled = !!imageUrl;
 
   return (
     <Layout>
-      <div className="flex flex-col gap-3 h-full p-4">
+      <div className="grid grid-rows-[min-content_min-content_auto] gap-3 h-full p-4">
         <div className="flex justify-end">
           <Share
             url={imageUrl ?? ""}
@@ -180,19 +176,19 @@ export default function NewRecipe() {
         </div>
 
         <div
-          className="flex flex-col justify-center h-full items-center min-h-[20vh]"
+          className="flex flex-col justify-center h-full items-center min-h-[30vh]"
           ref={imageContainerRef}
         >
           <ImagePreview
             overlayConfig={overlayConfig}
-            setImageUrl={url => setImageUrl(url)}
+            setImageUrl={setImageUrl}
           />
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="container mx-auto">
           <fieldset
             className={`flex flex-col md:grid md:grid-cols-2 gap-4 prose max-w-full mt-10 ${
-              fieldsEnabled ? "" : "opacity-50"
+              fieldsEnabled ? "" : "opacity-25"
             }`}
             disabled={!fieldsEnabled}
           >
@@ -229,6 +225,13 @@ export default function NewRecipe() {
                   type="text"
                   placeholder="From feeling"
                   className="input input-bordered w-full max-w-xs"
+                  value={emotionalJourney.from}
+                  onChange={event =>
+                    setEmotionalJourney(prev => ({
+                      ...prev,
+                      from: event.target.value,
+                    }))
+                  }
                 />
               </div>
               <div className="form-control w-full max-w-xs">
@@ -240,6 +243,13 @@ export default function NewRecipe() {
                   type="text"
                   placeholder="To feeling"
                   className="input input-bordered w-full max-w-xs"
+                  value={emotionalJourney.to}
+                  onChange={event =>
+                    setEmotionalJourney(prev => ({
+                      ...prev,
+                      to: event.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>

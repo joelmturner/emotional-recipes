@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[data-reach-dialog-content][role="dialog"] {
+  @apply bg-base-300 border-base-content w-full lg:max-w-4xl;
+}

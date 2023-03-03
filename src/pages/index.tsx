@@ -4,36 +4,32 @@ import { getLatestSubmittedRecipes } from "@/lib/recipes";
 import { Recipe } from "@/types";
 import Link from "next/link";
 
-export default function Home({ recipes }: { recipes: Recipe[] }) {
+export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
   return (
     <Layout>
-      <div className="hero bg-base-200 h-1/2">
-        <div className="hero-content flex-col lg:flex-row">
-          <div className="w-full md:w-1/3">
-            <h1 className="text-5xl font-bold">Emotional Wayfinding</h1>
-            <p className="py-6">
-              A tool to help you find your way through your emotions.
-            </p>
-            <Link href="/recipes/new" className="btn btn-primary">
-              Create a new recipe
-            </Link>
-          </div>
-
-          <div className="h-[300px] carousel carousel-vertical rounded-box">
-            {recipes.map((recipe, index) => (
-              <div
-                key={recipe.date}
-                id={`item${index + 1}`}
-                className="carousel-item h-full"
-              >
-                <Card key={recipe.url} recipe={recipe} eager={index === 0} />
-              </div>
-            ))}
+      <div className="grid grid-rows-[50vh_min-content_auto] gap-6">
+        <div className="hero h-full">
+          <div className="hero-content w-full flex-col gap-16">
+            <div className="w-full md:w-2/3">
+              <h1 className="text-5xl font-bold">Emotional Wayfinding</h1>
+              <p className="py-6">
+                A tool to help navigate stormy waters back to calm seas.
+              </p>
+              <Link href="/recipes/new" className="btn btn-primary">
+                Create a new recipe
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="p-6 prose mx-auto" id="mainContent">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 lg:gap-5 bg-base-200 w-full px-16 py-12">
+        {recipes.map((recipe, index) => (
+          <Card key={recipe.url} recipe={recipe} eager={index === 0} />
+        ))}
+      </div>
+
+      <div className="container prose mx-auto max-w-4xl mt-20" id="mainContent">
         <h2>What is this?</h2>
         <p>
           These recipes are meant to be a helpful reminder when things are a
@@ -68,7 +64,7 @@ export default function Home({ recipes }: { recipes: Recipe[] }) {
 }
 
 export async function getStaticProps() {
-  const recipes = await getLatestSubmittedRecipes(3);
+  const recipes = await getLatestSubmittedRecipes("FEATURED", 3);
 
   return {
     props: {
