@@ -8,8 +8,8 @@ export default function Recipes({ recipes }: { recipes: Recipe[] }) {
   return (
     <Layout>
       <div className="mx-auto container">
-        <h1 className="text-4xl font-bold px-6 my-6">Recipes</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
+        <h1 className="text-4xl font-bold my-6">Recipes</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recipes.map((recipe, index) => (
             <div className="relative w-full h-full group" key={recipe.url}>
               <Card key={recipe.url} recipe={recipe} eager={index < 3} />

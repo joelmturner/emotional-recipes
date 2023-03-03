@@ -16,7 +16,7 @@ export function Card({
       alt="emotional recipe image"
       className="aspect-video rounded-xl w-full h-full object-contain"
       priority={eager}
-      sizes={"(max-width: 360px) 100vw, (max-width: 768px) 33vw, 25vw"}
+      sizes={"(max-width: 380px) 100vw, (max-width: 768px) 33vw, 25vw"}
       quality={80}
     />
   );

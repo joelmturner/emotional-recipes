@@ -4,16 +4,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="grid grid-rows-[min-content_1fr_min-content] gap-3 antialiased h-screen text-base-content">
-        <div className="navbar border border-b border-base-300">
-          <div className="flex items-center justify-between container mx-auto px-6">
+        <div className="navbar px-0 border border-b border-base-300">
+          <div className="flex gap-4 items-center justify-between container mx-auto">
             <Link
               href="/"
-              className="sm:text-3xl text-xl font-bold ml-2 tracking-tight"
+              className="sm:text-3xl text-xl font-bold tracking-tight w-1/3"
             >
               Emotional Recipes
             </Link>
 
-            <ul className="flex items-center grow md:grow-0 shrink-0 md:shrink gap-2 md:gap-3">
+            <ul className="flex items-center  gap-2 md:gap-3">
               <li>
                 <Link
                   href="/recipes/new"
