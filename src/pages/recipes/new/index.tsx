@@ -190,8 +190,8 @@ export default function NewRecipe() {
 
         <form onSubmit={handleSubmit} className="container mx-auto">
           <fieldset
-            className={`flex flex-col md:grid md:grid-cols-2 gap-4 prose max-w-full mt-10 ${
-              fieldsEnabled ? "" : "opacity-25"
+            className={`flex flex-col md:grid md:grid-cols-2 gap-4 prose max-w-full mt-10 transition-opacity ${
+              fieldsEnabled ? "opacity-100" : "opacity-25"
             }`}
             disabled={!fieldsEnabled}
           >

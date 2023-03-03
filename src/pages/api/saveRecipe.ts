@@ -16,8 +16,9 @@ export default async function handler(
   if (req.method !== "POST") {
     return res.status(400).json({ message: "method not allowed" });
   }
+
   // Get data submitted in request's body.
-  const { url } = req.body;
+  const { url } = JSON.parse(req.body);
   const response = await supabase.from("recipes").insert([
     {
       url,
