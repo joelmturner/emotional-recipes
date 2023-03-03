@@ -44,29 +44,32 @@ export function Share({ handleShare, url, disabled = false }: ShareProps) {
         share
       </button>
       {shareOpen && (
-        <div className="flex gap-3 items-center">
-          <TwitterShareButton url={url}>
-            <FaTwitter />
-          </TwitterShareButton>
-          <FacebookShareButton url={url}>
-            <FaFacebook />
-          </FacebookShareButton>
-          <LinkedinShareButton url={url}>
-            <FaLinkedinIn />
-          </LinkedinShareButton>
-          <PinterestShareButton media={url} url={url}>
-            <FaPinterest />
-          </PinterestShareButton>
-          <EmailShareButton url={url}>
-            <IoMdSend />
-          </EmailShareButton>
-          <BiLink
-            className="cursor-pointer"
-            onClick={!!url ? () => copyToClipboard(url) : undefined}
-          />
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-3 items-center">
+            <TwitterShareButton url={url}>
+              <FaTwitter />
+            </TwitterShareButton>
+            <FacebookShareButton url={url}>
+              <FaFacebook />
+            </FacebookShareButton>
+            <LinkedinShareButton url={url}>
+              <FaLinkedinIn />
+            </LinkedinShareButton>
+            <PinterestShareButton media={url} url={url}>
+              <FaPinterest />
+            </PinterestShareButton>
+            <EmailShareButton url={url}>
+              <IoMdSend />
+            </EmailShareButton>
+            <BiLink
+              className="cursor-pointer"
+              onClick={!!url ? () => copyToClipboard(url) : undefined}
+            />
+          </div>
+
+          {state.value && <span className="text-sm">Copied!</span>}
         </div>
       )}
-      {state.value && <span className="text-sm">Copied!</span>}
     </div>
   );
 }

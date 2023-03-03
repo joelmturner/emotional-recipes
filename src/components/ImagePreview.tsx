@@ -63,7 +63,16 @@ export function ImagePreview({
       <div className="btn-group">
         <CldUploadWidget
           uploadPreset="ixvy6wbq"
-          options={{ folder: "emotional-recipes" } as any}
+          options={
+            // TODO JT submit issue for these prop types
+            {
+              folder: "emotional-recipes",
+              resourceType: "image",
+              // not sure how to get it to set moderation pending
+              // this doesn't seem to work
+              moderation: "manual",
+            } as any
+          }
           onUpload={handleOnUpload}
         >
           {({ open }) => {
@@ -91,10 +100,10 @@ export function ImagePreview({
       <Dialog
         isOpen={showDialog}
         onDismiss={() => setShowDialog(false)}
-        className="flex flex-col gap-3 h-full max-h-[70vh] overflow-y-auto"
+        className="flex flex-col gap-3 h-full max-h-[70vh] overflow-y-auto rounded-lg"
       >
         <button
-          className="btn btn-circle close-button self-end"
+          className="btn btn-circle btn-sm close-button self-end"
           onClick={() => setShowDialog(false)}
         >
           <svg

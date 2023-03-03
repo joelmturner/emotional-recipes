@@ -23,10 +23,12 @@ export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 lg:gap-5 bg-base-200 w-full px-16 py-12">
-        {recipes.map((recipe, index) => (
-          <Card key={recipe.url} recipe={recipe} eager={index === 0} />
-        ))}
+      <div className="bg-base-200 w-full py-6 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 lg:gap-5 container mx-auto w-full">
+          {recipes.map((recipe, index) => (
+            <Card key={recipe.url} recipe={recipe} eager={index === 0} />
+          ))}
+        </div>
       </div>
 
       <div className="container prose mx-auto max-w-4xl mt-20" id="mainContent">

@@ -163,6 +163,7 @@ export default function NewRecipe() {
   };
 
   const fieldsEnabled = !!imageUrl;
+  const canShare = fieldsEnabled && overlayConfig;
 
   return (
     <Layout>
@@ -171,7 +172,7 @@ export default function NewRecipe() {
           <Share
             url={imageUrl ?? ""}
             handleShare={handleShare}
-            disabled={!fieldsEnabled}
+            disabled={!canShare}
           />
         </div>
 
@@ -257,13 +258,34 @@ export default function NewRecipe() {
             <div className="form-control w-full flex flex-col gap-4">
               <div className="flex gap-8 items-center">
                 <h3>Steps</h3>
-                <button
-                  className="btn btn-xs btn-secondary btn-outline mt-6"
-                  onClick={generateSteps}
-                  disabled={!fieldsEnabled}
-                >
-                  {!!generatedSteps ? "Regenerate Steps" : "Generate Steps"}
-                </button>
+                <div className="flex items-center gap-1 mt-6">
+                  <button
+                    className="btn btn-xs btn-secondary btn-outline "
+                    onClick={generateSteps}
+                    disabled={!fieldsEnabled}
+                  >
+                    {!!generatedSteps ? "Regenerate Steps" : "Generate Steps"}
+                  </button>
+                  <div
+                    className="tooltip"
+                    data-tip="AI generated. Fill in From emotion and To emotion for better results."
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
               {stepArray.map((step, index) => {
                 const stepIndex = index + 1;
