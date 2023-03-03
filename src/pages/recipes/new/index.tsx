@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { ImagePreview } from "@/components/ImagePreview";
 import { Share } from "@/components/Share";
@@ -23,6 +23,8 @@ const CLOUDINARY_FONTS = [
 ];
 
 export default function NewRecipe() {
+  const [loading, setLoading] = useState(false);
+  const [generatedSteps, setGeneratedSteps] = useState("");
   const [stepsLength, setStepsLength] = useState(3);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const [imageUrl, setImageUrl] = useState<string>();
@@ -34,7 +36,18 @@ export default function NewRecipe() {
     any
   > | null>(null);
 
-  const stepArray = Array(stepsLength).fill("");
+  const stepArray = useMemo(() => {
+    let output: string[] = [];
+    if (!!generatedSteps) {
+      output = [...generatedSteps.split("\n").map(step => step.slice(3))];
+    }
+    if (output.length < stepsLength) {
+      output = [...output, ...Array(stepsLength - output.length).fill("")];
+    } else if (output.length > stepsLength) {
+      output = output.slice(0, stepsLength);
+    }
+    return output;
+  }, [stepsLength, generatedSteps]);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +108,62 @@ export default function NewRecipe() {
 
     const config = getConfig(formDataResolved);
     setOverlayConfig(config);
+  };
+
+  const prompt = `
+  For moving from emotional state "${
+    overlayConfig?.from ?? "anxious"
+  }" to emotional state "${
+    overlayConfig?.to ?? "calm"
+  }", identify the area of expertise that a coach would need to help with the request.
+  Once the area of expertise is identified generate 3 steps for someone to do right now to move from state to state.
+  Don't output the area of expertise, only return the steps. Make sure each step is under 100 characters and is clearly labeled "1. " and "2. "
+  `;
+
+  console.log("overlayConfig", overlayConfig);
+
+  const generateSteps = async (e: any) => {
+    e.preventDefault();
+    setGeneratedSteps("");
+    setStepsLength(0);
+    setLoading(true);
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    // This data is a ReadableStream
+    const data = response.body;
+    if (!data) {
+      return;
+    }
+
+    const reader = data.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      const chunkValue = decoder.decode(value);
+      setGeneratedSteps(prev => prev + chunkValue);
+    }
+
+    setStepsLength(3);
+    setOverlayConfig(prev => ({
+      ...prev,
+      steps: generatedSteps.split("\n"),
+    }));
+    setLoading(false);
   };
 
   return (
@@ -164,26 +233,25 @@ export default function NewRecipe() {
 
           <div className="form-control w-full flex flex-col gap-4">
             <h3>Steps</h3>
-            {Array(stepsLength)
-              .fill("")
-              .map((_, index) => {
-                const stepIndex = index + 1;
-                return (
-                  <div key={index}>
-                    <label className="label" htmlFor={`step_${stepIndex}`}>
-                      <span className="label-text">{`Step ${stepIndex}`}</span>
-                    </label>
+            {stepArray.map((step, index) => {
+              const stepIndex = index + 1;
+              return (
+                <div key={index}>
+                  <label className="label" htmlFor={`step_${stepIndex}`}>
+                    <span className="label-text">{`Step ${stepIndex}`}</span>
+                  </label>
 
-                    <input
-                      type="text"
-                      placeholder={`Take a deep breath`}
-                      name={`step_${stepIndex}`}
-                      id={`step_${stepIndex}`}
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                );
-              })}
+                  <input
+                    type="text"
+                    placeholder={`Take a deep breath`}
+                    name={`step_${stepIndex}`}
+                    id={`step_${stepIndex}`}
+                    className="input input-bordered w-full"
+                    defaultValue={!!step ? step : undefined}
+                  />
+                </div>
+              );
+            })}
 
             <div className="flex gap-4">
               <button
@@ -227,6 +295,13 @@ export default function NewRecipe() {
                   />
                 </svg>
                 Remove Step
+              </button>
+
+              <button
+                className="btn btn-sm btn-outline"
+                onClick={generateSteps}
+              >
+                {!!generatedSteps ? "Regenerate Steps" : "Generate Steps"}
               </button>
             </div>
           </div>

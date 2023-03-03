@@ -19,8 +19,21 @@ function getCloudinaryColor(color: string) {
   return color.replace("#", "rgb:");
 }
 
+function resolveStepString(step: string, index: number): string {
+  let output = step;
+  if (!step.startsWith(`${index}`)) {
+    output = `${index + 1}. ${step}`;
+  }
+
+  return encodeURIComponent(output);
+}
+
+function getLineLengthMultiplier(fontSize: number, step: string): number {
+  // 1.5 is the default line height
+  return Math.ceil((step.length * fontSize) / (MAX_TEXT_WIDTH * 1.75));
+}
+
 export function getConfig(formData: FormData) {
-  console.log("formData", formData);
   const color = getCloudinaryColor(formData.color);
 
   const title = formData.title && {
@@ -70,13 +83,14 @@ export function getConfig(formData: FormData) {
   const fontSize = formData.bodyFontSize ?? FONT_SIZE_MD;
   const lineSpacing = formData.lineHeight ?? FONT_SIZE_SM;
 
-  console.log("initialY", initialY);
-
   const steps =
     formData.steps?.reduce((finalSteps, step, index) => {
       // crude approximation of text length vs line wrapping
-      const prevTextLength = index > 0 ? formData.steps[index - 1]?.length : 0;
-      const lineWrapMultiplier = prevTextLength > 50 ? 2 : 1;
+      // TODO JT still seems off, come back later
+      const lineWrapMultiplier = getLineLengthMultiplier(
+        fontSize,
+        index > 0 ? formData.steps[index - 1] : step
+      );
 
       const prevY = finalSteps?.[index - 1]?.position.y ?? 0;
       const y = Math.ceil(
@@ -99,7 +113,7 @@ export function getConfig(formData: FormData) {
           fontSize,
           letterSpacing: 1,
           lineSpacing,
-          text: encodeURIComponent(`${index + 1}. ${step}`),
+          text: resolveStepString(step, index + 1),
         },
       });
 
