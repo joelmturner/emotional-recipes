@@ -1,4 +1,4 @@
-import { FormData } from "@/types";
+import { CheckboxValue, FormData } from "@/types";
 
 export const IMAGE_SIZE = {
   width: 1280,
@@ -14,6 +14,7 @@ const FONT_SIZE_SM = Math.ceil(IMAGE_SIZE.width * 0.03);
 const FONT_SIZE_MD = Math.ceil(IMAGE_SIZE.width * 0.05);
 const INITIAL_STEP_SPACING = Math.ceil(IMAGE_SIZE.width * 0.046);
 const LIST_ITEM_SPACING = Math.ceil(IMAGE_SIZE.width * 0.0375);
+const STROKE_WIDTH = Math.ceil(IMAGE_SIZE.width * 0.001);
 
 function getCloudinaryColor(color: string) {
   return color.replace("#", "rgb:");
@@ -30,6 +31,10 @@ function resolveStepString(step: string, index: number): string {
 
 function getLineLengthMultiplier(fontSize: number, step: string): number {
   return Math.ceil((step.length * fontSize) / (MAX_TEXT_WIDTH * 2.15));
+}
+
+function isChecked(value: CheckboxValue): boolean {
+  return value === "checked";
 }
 
 export function getConfig(formData: FormData) {
@@ -49,6 +54,10 @@ export function getConfig(formData: FormData) {
       fontSize: FONT_SIZE_MD,
       letterSpacing: 3,
       fontWeight: "bold",
+      stroke: true,
+      border: `${STROKE_WIDTH}px_solid_${getCloudinaryColor(
+        formData.bgColor_value
+      )}`,
       text: encodeURIComponent(formData.title),
     },
   };
@@ -68,6 +77,10 @@ export function getConfig(formData: FormData) {
       fontStyle: "italic",
       letterSpacing: 1,
       textTransform: "uppercase",
+      stroke: true,
+      border: `${STROKE_WIDTH}px_solid_${getCloudinaryColor(
+        formData.bgColor_value
+      )}`,
       text: encodeURIComponent(formData.subtitle),
     },
   };
@@ -105,9 +118,14 @@ export function getConfig(formData: FormData) {
         text: {
           color,
           fontFamily: formData.font,
+          fontWeight: "semibold",
           fontSize,
           letterSpacing: 1,
           lineSpacing,
+          stroke: true,
+          border: `${STROKE_WIDTH}px_solid_${getCloudinaryColor(
+            formData.bgColor_value
+          )}`,
           text: resolveStepString(step, index + 1),
         },
       });
@@ -120,20 +138,31 @@ export function getConfig(formData: FormData) {
       {
         aspect_ratio: "16.9",
       },
-      {
-        background: getCloudinaryColor(formData.backgroundColor),
+      isChecked(formData.bgColor_enabled) && {
+        background: getCloudinaryColor(formData.bgColor_value),
       },
-      {
-        gradientFade: true,
+      ...(isChecked(formData.gradient_enabled)
+        ? [
+            {
+              gradientFade: true,
+            },
+            {
+              gradientFade: `symetric,x_${formData.gradient_value}`,
+            },
+          ]
+        : []),
+      isChecked(formData.opacity_enabled) && {
+        opacity: formData.opacity_value,
       },
-      {
-        gradientFade: "symetric,x_0.75",
+      isChecked(formData.blur_enabled) && {
+        blur: formData.blur_value,
       },
+
       // seems like radius doesn't apply to backgrounds
-      // {
-      //   radius: 20,
-      // },
-    ],
+      //   {
+      //     radius: 20,
+      //   },
+    ].filter(Boolean),
     overlays: formData
       ? [title, subtitle, ...steps].filter(Boolean)
       : undefined,

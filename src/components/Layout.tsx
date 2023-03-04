@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
   return (
     <>
       <div className="grid grid-rows-[min-content_1fr_min-content] gap-3 antialiased h-screen text-base-content overflow-y-auto">
@@ -17,7 +20,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <li>
                 <Link
                   href="/recipes/new"
-                  className="btn btn-primary btn-xs normal-case"
+                  className={`btn  btn-xs normal-case ${
+                    router.pathname === "/recipes/new"
+                      ? "btn-outline"
+                      : "btn-primary"
+                  }`}
                 >
                   New Recipe
                 </Link>

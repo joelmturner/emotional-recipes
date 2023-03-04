@@ -6,6 +6,8 @@ import { FormData } from "@/types";
 import { getConfig } from "@/lib/utils";
 import { HexColorPicker } from "react-colorful";
 import { getSavedBackgroundImages } from "@/lib/recipes";
+import { Resource } from "../../../types";
+import { BackgroundTunables } from "@/components/tunables/BackgroundTunables";
 
 // https://cloudinary.com/documentation/media_editor_reference#textoverlaysprops
 const CLOUDINARY_FONTS = [
@@ -86,7 +88,7 @@ export default function NewRecipe({
     );
 
     const steps: string[] = [];
-    const output: Record<string, string> = {};
+    const output = {} as FormData & Record<string, string>;
 
     keys.sort().forEach(key => {
       const el = event.target[`${key}`];
@@ -99,17 +101,15 @@ export default function NewRecipe({
     });
 
     const formDataResolved: FormData = {
+      ...output,
       title: output.title ?? null,
       subtitle:
         !!output.from && !!output.to
           ? `Move from ${output.from} to ${output.to}`
           : null,
       steps,
-      color: output.color,
-      backgroundColor: output.backgroundColor,
-      font: output.font,
       lineHeight: 0,
-      bodyFontSize: parseInt(output.bodyFontSize),
+      bodyFontSize: parseInt(output.bodyFontSize as unknown as string),
     };
 
     const config = getConfig(formDataResolved);
@@ -376,37 +376,55 @@ export default function NewRecipe({
 
             <div className="flex flex-col gap-4">
               <h3>Font</h3>
-              <label className="label" htmlFor="font">
-                Family
-              </label>
-              <select
-                className="select w-full max-w-xs"
-                id="font"
-                defaultValue="Source Sans Pro"
-              >
-                {CLOUDINARY_FONTS.map(font => (
-                  <option key={font} value={font}>
-                    {font}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-3 items-center">
+                <label className="label" htmlFor="font">
+                  Family
+                </label>
+                <select
+                  className="select w-full max-w-xs"
+                  id="font"
+                  defaultValue="Source Sans Pro"
+                >
+                  {CLOUDINARY_FONTS.map(font => (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <div className="flex flex-col md:flex-row gap-3">
-                <div className="flex gap-3 items-start">
-                  <label className="label pt-3">Text color</label>
-                  <div className="collapse">
-                    <input type="checkbox" />
-                    <div className="collapse-title text-xl font-medium">
+                <div className="flex gap-3 items-center">
+                  <label className="label">Text color</label>
+                  <div
+                    className={`dropdown dropdown-top ${
+                      true ? "opacity-100" : "opacity-20 pointer-events-none"
+                    }`}
+                  >
+                    <label
+                      tabIndex={0}
+                      className="flex items-center cursor-pointer"
+                    >
                       <div
                         className="rounded w-16 h-6 border"
                         style={{ backgroundColor: color }}
-                      ></div>
-                    </div>
-                    <div className="collapse-content">
-                      <div className="py-6">
-                        <HexColorPicker color={color} onChange={setColor} />
-                        <input type="hidden" id="color" value={color} />
-                      </div>
+                      />
+                    </label>
+                    <div
+                      tabIndex={0}
+                      className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                    >
+                      <HexColorPicker
+                        color={color}
+                        //   onChange={value =>
+                        //     setFormState(prev => ({
+                        //       ...prev,
+                        //       color: { ...prev.color, value },
+                        //     }))
+                        //   }
+                        onChange={setColor}
+                      />
+                      <input type="hidden" id="color" value={color} />
                     </div>
                   </div>
                 </div>
@@ -423,59 +441,12 @@ export default function NewRecipe({
                   type="range"
                   min="10"
                   max="100"
-                  className="range"
+                  className="range range-xs"
                   placeholder="40"
                 />
               </div>
 
-              <h3>Background</h3>
-              <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-3">
-                  <span className="label-text">Background gradient</span>
-                  <input
-                    type="checkbox"
-                    className="toggle"
-                    checked={gradientChecked}
-                    onChange={handleChange}
-                  />
-                </label>
-              </div>
-
-              {gradientChecked ? (
-                <div className="flex gap-3 items-start">
-                  <label className="label pt-3">Background color</label>
-                  <div className="collapse">
-                    <input type="checkbox" />
-                    <div className="collapse-title text-xl font-medium">
-                      <div
-                        className="rounded w-16 h-6 border"
-                        style={{ backgroundColor: bgColor }}
-                      ></div>
-                    </div>
-                    <div className="collapse-content">
-                      <HexColorPicker color={bgColor} onChange={setBgColor} />
-                      <input
-                        type="hidden"
-                        id="backgroundColor"
-                        value={bgColor}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-              {/* <div>
-              <label className="label" htmlFor="lineHeight">
-                Line Spacing
-              </label>
-              <input
-                id="lineHeight"
-                type="range"
-                min="10"
-                max="100"
-                className="range"
-                placeholder="40"
-              />
-            </div> */}
+              <BackgroundTunables />
             </div>
           </fieldset>
         </form>

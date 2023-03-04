@@ -39,15 +39,24 @@ export interface UploadResultInfo {
   thumbnail_url: string;
 }
 
+export type CheckboxValue = "checked" | "unchecked";
+
 export type FormData = {
   title: string | null;
   subtitle: string | null;
   steps: string[];
   color: string;
-  backgroundColor: string;
   font: string;
   lineHeight: number;
   bodyFontSize: number;
+  gradient_enabled: CheckboxValue;
+  gradient_value: string;
+  blur_enabled: CheckboxValue;
+  blur_value: string;
+  opacity_enabled: CheckboxValue;
+  opacity_value: string;
+  bgColor_enabled: CheckboxValue;
+  bgColor_value: string;
 };
 
 // generated using https://transform.tools/json-to-typescript
