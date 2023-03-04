@@ -1,6 +1,15 @@
 import { supabase } from "@/lib/api";
 import { Recipe } from "@/types";
 import { moderationStates } from "./constants";
+import { v2 as cloudinary } from "cloudinary";
+import { Resource } from "../types";
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 export async function getLatestSubmittedRecipes(
   filter: "FEATURED" | "APPROVED" = "APPROVED",
@@ -22,4 +31,15 @@ export async function getLatestSubmittedRecipes(
   }
 
   return (results as Recipe[]) ?? null;
+}
+
+export async function getSavedBackgroundImages(): Promise<Resource[]> {
+  const { resources } = await cloudinary.search
+    .expression(`folder:emotional-recipes && tags=${moderationStates.APPROVED}`)
+    .sort_by("public_id", "desc")
+    .max_results(30)
+    .with_field("tags")
+    .execute();
+
+  return resources;
 }

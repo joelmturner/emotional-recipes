@@ -5,6 +5,7 @@ import { Share } from "@/components/Share";
 import { FormData } from "@/types";
 import { getConfig } from "@/lib/utils";
 import { HexColorPicker } from "react-colorful";
+import { getSavedBackgroundImages } from "@/lib/recipes";
 
 // https://cloudinary.com/documentation/media_editor_reference#textoverlaysprops
 const CLOUDINARY_FONTS = [
@@ -21,7 +22,11 @@ const CLOUDINARY_FONTS = [
   "Source Sans Pro",
 ];
 
-export default function NewRecipe() {
+export default function NewRecipe({
+  backgroundImages,
+}: {
+  backgroundImages: Resource[];
+}) {
   const [emotionalJourney, setEmotionalJourney] = useState({
     from: "",
     to: "",
@@ -185,6 +190,7 @@ export default function NewRecipe() {
           <ImagePreview
             overlayConfig={overlayConfig}
             setImageUrl={setImageUrl}
+            backgroundImages={backgroundImages}
           />
         </div>
 
@@ -476,4 +482,14 @@ export default function NewRecipe() {
       </div>
     </Layout>
   );
+}
+
+export async function getStaticProps() {
+  const images = await getSavedBackgroundImages();
+
+  return {
+    props: {
+      backgroundImages: images,
+    },
+  };
 }

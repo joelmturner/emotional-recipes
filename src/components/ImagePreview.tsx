@@ -6,28 +6,20 @@ import "@reach/dialog/styles.css";
 
 type ImagePreviewProps = {
   overlayConfig?: Record<string, any> | null;
+  backgroundImages: Resource[];
   setImageUrl: (url: string) => void;
 };
 
 export function ImagePreview({
   overlayConfig = {},
   setImageUrl,
+  backgroundImages,
 }: ImagePreviewProps) {
   const [activeImage, setActiveImage] = useState<{
     id: string;
     url: string;
   } | null>(null);
-  const [storedImages, setStoredImages] = useState<Resource[]>([]);
   const [showDialog, setShowDialog] = useState(false);
-
-  const handleFetchImages = useCallback(async () => {
-    setShowDialog(true);
-
-    if (storedImages.length > 0) return;
-    const response = await fetch("/api/getBaseImages", { method: "POST" });
-    const { data } = await response.json();
-    setStoredImages(data);
-  }, [storedImages]);
 
   function handleOnUpload(
     result: UploadResult,
@@ -92,11 +84,12 @@ export function ImagePreview({
         </CldUploadWidget>
         <button
           className={`btn ${activeImage ? "btn-ghost" : "btn-secondary"}`}
-          onClick={handleFetchImages}
+          onClick={() => setShowDialog(true)}
         >
           {activeImage ? "Choose a new image" : "Choose Image"}
         </button>
       </div>
+
       <Dialog
         isOpen={showDialog}
         onDismiss={() => setShowDialog(false)}
@@ -121,14 +114,14 @@ export function ImagePreview({
             />
           </svg>
         </button>
-        {storedImages.length > 0 ? (
+        {backgroundImages?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-1 p-1 md:mt-3 lg:mt-6 overflow-y-auto">
-            {storedImages.map(image => (
+            {backgroundImages.map(image => (
               <CldImage
                 key={image.public_id}
                 src={image.public_id}
-                width="1280"
-                height="720"
+                width="352"
+                height="198"
                 crop="fill"
                 alt="emotional recipe background image"
                 className="aspect-video rounded-xl w-full max-w-[800px] cursor-pointer hover:outline-none hover:ring hover:ring-accent"
