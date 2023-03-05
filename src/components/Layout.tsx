@@ -34,12 +34,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   Recipes
                 </Link>
               </li>
-              <li>
-                <button
-                  data-toggle-theme="dark,light"
-                  data-act-class="ACTIVECLASS"
-                ></button>
-              </li>
             </ul>
           </div>
         </div>
@@ -60,7 +54,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <p className="text-xs text-neutral-content justify-end">
-              Built with Nextjs, DaisyUI (TailwindCSS), and Cloudinary
+              Built with [Next.js](https://nextjs.org/),
+              [DaisyUI](https://daisyui.com/) and [Tailwind
+              CSS](https://tailwindcss.com/), and
+              [Cloudinary](https://cloudinary.com/)
             </p>
           </div>
         </footer>

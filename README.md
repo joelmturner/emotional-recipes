@@ -1,27 +1,20 @@
-# Next.js + Tailwind CSS Example
+# Emotional Recipes
 
-This example shows how to use [Tailwind CSS](https://tailwindcss.com/) [(v3.2)](https://tailwindcss.com/blog/tailwindcss-v3-2) with Next.js. It follows the steps outlined in the official [Tailwind docs](https://tailwindcss.com/docs/guides/nextjs).
+The goal of this project is to explore multiple tech pieces and hopefully provide some mental health assistance as well. The project was built for the [Cloudinary CloudCreate Tech Products Hackathon](https://cloudinary.com/blog/cloudinary-cloudcreate-tech-products-hackathon).
 
-## Deploy your own
+## The Tech
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) or preview live with [StackBlitz](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-tailwindcss)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss&project-name=with-tailwindcss&repository-name=with-tailwindcss)
+This site is built with [DaisyUI](https://daisyui.com/) and [Tailwind CSS](https://tailwindcss.com/), [Next.js](https://nextjs.org/), and [Cloudinary](https://cloudinary.com/).
 
 ## How to use
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+Clone the project and add an .env.local with the following keys:
 
 ```bash
-npx create-next-app --example with-tailwindcss with-tailwindcss-app
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+OPENAI_API_KEY
 ```
-
-```bash
-yarn create next-app --example with-tailwindcss with-tailwindcss-app
-```
-
-```bash
-pnpm create next-app --example with-tailwindcss with-tailwindcss-app
-```
-
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
