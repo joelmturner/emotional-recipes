@@ -1,31 +1,35 @@
-import { useCallback, useState } from "react";
-import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { Resource, UploadResult } from "@/types";
 import { Dialog } from "@reach/dialog";
+import { CldImage, CldUploadWidget } from "next-cloudinary";
+import { useEffect, useRef, useState } from "react";
 import "@reach/dialog/styles.css";
 
 type ImagePreviewProps = {
   overlayConfig?: Record<string, any> | null;
   backgroundImages: Resource[];
+  inheritedPublicId?: string | null;
   setImageUrl: (url: string) => void;
+  handleLoadFromImage: (url: string) => void;
 };
 
 export function ImagePreview({
   overlayConfig = {},
   setImageUrl,
   backgroundImages,
+  inheritedPublicId = null,
+  handleLoadFromImage,
 }: ImagePreviewProps) {
-  const [activeImage, setActiveImage] = useState<{
-    id: string;
-    url: string;
-  } | null>(null);
+  const pastedUrlInput = useRef<HTMLInputElement>(null);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => setActiveImage(inheritedPublicId), [inheritedPublicId]);
 
   function handleOnUpload(
     result: UploadResult,
     widget: Record<string, any>
   ): void {
-    setActiveImage({ id: result.info.public_id, url: result.info.secure_url });
+    setActiveImage(result.info.public_id);
     setImageUrl(result.info.secure_url);
 
     // close the upload widget
@@ -33,16 +37,23 @@ export function ImagePreview({
   }
 
   function handleSelectImage(image: Resource) {
-    setActiveImage({ id: image.public_id, url: image.secure_url });
+    setActiveImage(image.public_id);
     setImageUrl(image.secure_url);
     setShowDialog(false);
+  }
+
+  function handleLoadUrl() {
+    const url = pastedUrlInput.current?.value;
+    if (url) {
+      handleLoadFromImage(url);
+    }
   }
 
   return (
     <div className="flex flex-col items-center gap-6 w-full">
       {activeImage ? (
         <CldImage
-          src={activeImage.id}
+          src={activeImage}
           width="1280"
           height="720"
           crop="fill"
@@ -88,6 +99,33 @@ export function ImagePreview({
         >
           {activeImage ? "Choose a new image" : "Choose Image"}
         </button>
+        <div className="dropdown dropdown-top">
+          <button
+            className={`btn ${
+              activeImage ? "btn-ghost" : "btn-accent"
+            } !rounded-l-none !rounded-btn`}
+            onClick={() => pastedUrlInput.current?.focus()}
+          >
+            {activeImage ? "Paste a new image URL" : "Paste image URL"}
+          </button>
+          <div
+            tabIndex={0}
+            className="card compact dropdown-content shadow bg-base-300 rounded-box w-min-content"
+          >
+            <div className="card-body not-prose">
+              <h2 className="card-title">Enter Image URL</h2>
+              <div className="flex gap-3 p-3">
+                <input ref={pastedUrlInput} id="baseURL" />
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={handleLoadUrl}
+                >
+                  Load
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Dialog

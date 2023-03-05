@@ -1,4 +1,5 @@
-import { CheckboxValue, FormData } from "@/types";
+import { CheckboxValue, FormData, FormState } from "@/types";
+import _set from "lodash/set";
 
 export const IMAGE_SIZE = {
   width: 1280,
@@ -171,4 +172,188 @@ export function getConfig(formData: FormData) {
   return config;
 }
 
-// Some really long text that will hopefully wrap around to the next line and use better spacing
+// suuuuuper hacky, there's probably much better ways to do this
+function convertConvertedEffectsToFormState(
+  effects: Record<string, any>[]
+): FormState {
+  const formState = {} as FormState;
+
+  const bgLayer = effects.find(effect => effect.bgColor);
+  if (bgLayer) {
+    _set(formState, "background.bgColor.enabled", true);
+    _set(formState, "background.bgColor.value", bgLayer.bgColor);
+  }
+
+  const gradientLayer = effects.find(
+    effect => typeof effect.gradientFade === "string"
+  );
+  _set(formState, "background.gradient.enabled", !!gradientLayer);
+  _set(
+    formState,
+    "background.gradient.value",
+    gradientLayer?.gradientFade.split("_")[1] ?? undefined
+  );
+
+  const opacityLayer = effects.find(effect => effect.opacity);
+  _set(formState, "background.opacity.enabled", !!opacityLayer);
+  _set(
+    formState,
+    "background.opacity.value",
+    opacityLayer?.opacity ?? undefined
+  );
+
+  const blurLayer = effects.find(effect => effect.blur);
+  _set(formState, "background.blur.enabled", !!blurLayer);
+  _set(formState, "background.blur.value", blurLayer?.blur ?? undefined);
+
+  const textLayers = effects.filter(effect => effect.text);
+  textLayers.forEach(textLayer => {
+    if (textLayer.letterSpacing === "3") {
+      formState["title"] = textLayer.text;
+      return;
+    }
+    if (textLayer.style === "italic") {
+      const [from, to] = textLayer.text.replace("Move from ", "").split(" to ");
+      formState["from"] = from;
+      formState["to"] = to;
+      return;
+    }
+
+    if (formState["steps"]) {
+      formState[`steps`].push(textLayer.text.slice(3));
+    } else {
+      formState[`steps`] = [textLayer.text.slice(3)];
+    }
+
+    _set(formState, "font.family", textLayer.font);
+    _set(formState, "font.color", textLayer.color);
+    _set(formState, "font.size", parseInt(textLayer.size));
+  });
+
+  return formState;
+}
+
+const EFFECT_NAME_TO_KEY = {
+  c: "crop",
+  w: "width",
+  h: "height",
+  g: "gravity",
+  b: "background",
+  e: "gradientFade",
+  x: "x",
+  y: "y",
+  l: "text",
+  fl: "layer",
+  f: "format",
+  q: "quality",
+  o: "opacity",
+};
+
+function convertTextToHumanReadable(text: string) {
+  return decodeURI(text).replace(/%0A|%20/g, " ");
+}
+
+const LETTER_SPACING_PATTERN = /letter_spacing_(\d+)/;
+const LINE_SPACING_PATTERN = /line_spacing_(\d+)/;
+
+type Effect = string | number | boolean;
+function convertRawEffectsToConvertedEffects(
+  effects: string[][]
+): Record<string, Effect>[] {
+  const convertedEffects = effects.map(effect => {
+    const convertedEffect = effect.reduce((acc, curr, index) => {
+      const next = effect.length > index ? effect[index + 1] : null;
+      const prev = effect.length > 0 ? effect[index - 1] : null;
+
+      // handle text overlays
+      if (curr.startsWith("l_text")) {
+        const [_, fontAndSize, text] = curr.split(":");
+        const [font, size, style] = fontAndSize.split("_");
+
+        const letterSpacing = fontAndSize
+          .match(LETTER_SPACING_PATTERN)?.[0]
+          .split("_")
+          .at(-1);
+
+        const lineSpacing = fontAndSize
+          .match(LINE_SPACING_PATTERN)?.[0]
+          ?.split("_")
+          ?.at(-1);
+
+        acc["font"] = decodeURI(font);
+        acc["size"] = size;
+        acc["style"] = style;
+
+        if (letterSpacing) {
+          acc["letterSpacing"] = letterSpacing;
+        }
+        if (lineSpacing) {
+          acc["lineSpacing"] = lineSpacing;
+        }
+
+        acc["text"] = convertTextToHumanReadable(text);
+        return acc;
+      }
+
+      // special cases
+      if (curr.startsWith("g_")) {
+        acc["gravity"] = curr.replace("g_", "");
+        return acc;
+      }
+
+      if (curr.startsWith("0_")) {
+        acc["opacity"] = curr.replace("0_", "");
+        return acc;
+      }
+
+      if (curr.startsWith("fl_")) {
+        acc["layer"] = curr.replace("fl_", "");
+        return acc;
+      }
+
+      if (curr.startsWith("co_")) {
+        acc["color"] = curr.replace("co_", "").replace("rgb:", "#");
+        return acc;
+      }
+
+      if (curr.startsWith("b_")) {
+        acc["bgColor"] = curr.replace("b_", "").replace("rgb:", "#");
+        return acc;
+      }
+
+      if (prev?.startsWith("e_gradient_fade") && curr.startsWith("x_")) {
+        return acc;
+      }
+
+      if (curr.startsWith("e_gradient_fade")) {
+        if (next?.startsWith("x_")) {
+          acc["gradientFade"] =
+            curr.replace("e_gradient_fade:", "") + "," + next;
+        } else {
+          acc["gradientFade"] = true;
+        }
+        return acc;
+      }
+
+      if (curr.startsWith("e_blur")) {
+        acc["blur"] = curr.replace("e_blur:", "");
+        return acc;
+      }
+
+      const [key, value] = curr.split("_");
+      const resolvedKey =
+        EFFECT_NAME_TO_KEY[key as keyof typeof EFFECT_NAME_TO_KEY];
+      acc[resolvedKey] = value;
+      return acc;
+    }, {} as Record<string, Effect>);
+
+    return convertedEffect;
+  });
+
+  return convertedEffects;
+}
+
+export function convertEffectsToFormState(effects: string[][]): FormState {
+  const convertedEffects = convertRawEffectsToConvertedEffects(effects);
+  return convertConvertedEffectsToFormState(convertedEffects);
+}

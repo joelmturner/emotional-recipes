@@ -1,42 +1,32 @@
-import { useCallback, useState } from "react";
+import { initialBackgroundState } from "@/lib/constants";
+import { BackgroundState, FormState } from "@/types";
+import { Dispatch, SetStateAction } from "react";
 import { HexColorPicker } from "react-colorful";
 
-const initialState = {
-  gradient: {
-    enabled: true,
-    value: 0.75,
-  },
-  blur: {
-    enabled: false,
-    value: 300,
-  },
-  opacity: {
-    enabled: false,
-    value: 40,
-  },
-  bgColor: {
-    enabled: true,
-    value: "#222222",
-  },
-};
-
-export function BackgroundTunables() {
-  const [formState, setFormState] = useState(initialState);
-
-  function renderCheckbox(key: keyof typeof initialState) {
+export function BackgroundTunables({
+  inheritedState,
+  setFormState,
+}: {
+  inheritedState: BackgroundState;
+  setFormState: Dispatch<SetStateAction<FormState>>;
+}) {
+  function renderCheckbox(key: keyof typeof initialBackgroundState) {
     return (
       <input
         type="checkbox"
-        checked={formState[key].enabled}
-        value={formState[key].enabled ? "checked" : "unchecked"}
+        checked={inheritedState[key].enabled}
+        value={inheritedState[key].enabled ? "checked" : "unchecked"}
         id={`${key}_enabled`}
         name={`${key}_enabled`}
         onChange={() =>
           setFormState(prev => ({
             ...prev,
-            [key]: {
-              ...formState[key],
-              enabled: !formState[key].enabled,
+            background: {
+              ...prev.background,
+              [key]: {
+                ...prev.background[key],
+                enabled: !prev.background[key].enabled,
+              },
             },
           }))
         }
@@ -46,12 +36,12 @@ export function BackgroundTunables() {
   }
 
   function renderRange(
-    key: keyof typeof initialState,
+    key: keyof typeof initialBackgroundState,
     min: number,
     max: number,
     step?: number
   ) {
-    const disabled = !formState[key].enabled;
+    const disabled = !inheritedState[key].enabled;
     return (
       <input
         id={`${key}_value`}
@@ -61,15 +51,18 @@ export function BackgroundTunables() {
         className={`range range-xs transition-opacity ${
           disabled ? "opacity-20" : "opacity-100"
         }`}
-        value={formState[key].value}
+        value={inheritedState[key].value}
         step={step + ""}
         disabled={disabled}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
           setFormState(prev => ({
             ...prev,
-            [key]: {
-              ...formState[key],
-              value: parseInt(event.target.value),
+            background: {
+              ...prev.background,
+              [key]: {
+                ...prev.background[key],
+                value: parseInt(event.target.value),
+              },
             },
           }))
         }
@@ -113,7 +106,7 @@ export function BackgroundTunables() {
         {renderCheckbox("bgColor")}
         <div
           className={`dropdown dropdown-top ${
-            formState.bgColor.enabled
+            inheritedState.bgColor.enabled
               ? "opacity-100"
               : "opacity-20 pointer-events-none"
           }`}
@@ -121,7 +114,7 @@ export function BackgroundTunables() {
           <label tabIndex={0} className="flex items-center cursor-pointer">
             <div
               className="rounded w-16 h-6 border"
-              style={{ backgroundColor: formState.bgColor.value }}
+              style={{ backgroundColor: inheritedState.bgColor.value }}
             />
           </label>
           <div
@@ -129,18 +122,21 @@ export function BackgroundTunables() {
             className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
           >
             <HexColorPicker
-              color={formState.bgColor.value}
+              color={inheritedState.bgColor.value}
               onChange={value =>
                 setFormState(prev => ({
                   ...prev,
-                  bgColor: { ...prev.bgColor, value },
+                  background: {
+                    ...prev.background,
+                    bgColor: { ...prev.background.bgColor, value },
+                  },
                 }))
               }
             />
             <input
               type="hidden"
               id="bgColor_value"
-              value={formState.bgColor.value}
+              value={inheritedState.bgColor.value}
             />
           </div>
         </div>

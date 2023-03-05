@@ -22,6 +22,11 @@
   resolved "https://registry.yarnpkg.com/@cloudinary-util/util/-/util-1.2.2.tgz#af205a3b8ce2e8cec14bb9bf9f504b1d0151c3e4"
   integrity sha512-xtXLfjsLoAKTsFUKDS0P/RPfgfnWs6iSkSBYZoG9uxAgK0MutWUZECX6wfN9FDa/3Yr+Z8oTRxxQuFBasyAqDg==
 
+"@cloudinary-util/util@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@cloudinary-util/util/-/util-2.0.0.tgz#264278576edb6bc3840e6dff2fa859007c2bdfac"
+  integrity sha512-7WHFR7uIizW+MRLk+RhLVFQ6jzPKYrBZGICqy6s38hakj+zpXd4nISmMfKbZgwFTBp53oHRi8dW9G2kzXmVe3w==
+
 "@cloudinary/transformation-builder-sdk@^1.2.4":
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/@cloudinary/transformation-builder-sdk/-/transformation-builder-sdk-1.2.6.tgz#4cceece68210af48d34bc6e5d40494c5fdf7ab08"
@@ -229,6 +234,11 @@
   version "2.2.7"
   resolved "https://registry.yarnpkg.com/@types/js-cookie/-/js-cookie-2.2.7.tgz#226a9e31680835a6188e887f3988e60c04d3f6a3"
   integrity sha512-aLkWa0C0vO5b4Sr798E26QgOkss68Un0bLjs7u9qxzPT5CG+8DuNTffWES58YzJs3hrVAOs1wonycqEBqNJubA==
+
+"@types/lodash@^4.14.191":
+  version "4.14.191"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.191.tgz#09511e7f7cba275acd8b419ddac8da9a6a79e2fa"
+  integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
 
 "@types/node@18.11.3":
   version "18.11.3"

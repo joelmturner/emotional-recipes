@@ -1,15 +1,21 @@
-import Layout from "@/components/Layout";
-import { useCallback, useMemo, useRef, useState } from "react";
 import { ImagePreview } from "@/components/ImagePreview";
+import Layout from "@/components/Layout";
 import { Share } from "@/components/Share";
-import { FormData } from "@/types";
-import { getConfig } from "@/lib/utils";
-import { HexColorPicker } from "react-colorful";
-import { getSavedBackgroundImages } from "@/lib/recipes";
-import { Resource } from "../../../types";
 import { BackgroundTunables } from "@/components/tunables/BackgroundTunables";
+import { initialFormState } from "@/lib/constants";
+import { getSavedBackgroundImages } from "@/lib/recipes";
+import { convertEffectsToFormState, getConfig } from "@/lib/utils";
+import { FormData, FormState } from "@/types";
+import { getPublicId, getTransformations } from "@cloudinary-util/util";
+import _merge from "lodash/merge";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { HexColorPicker } from "react-colorful";
+import { Resource } from "../../../types";
+import _debounce from "lodash/debounce";
 
 // https://cloudinary.com/documentation/media_editor_reference#textoverlaysprops
+// update: better list here: https://www.alanwsmith.com/posts/google-fonts-you-can-use-in-cloudinary-transformations--26mqi8ovvtka
+// TODO JT add a few more from the list above
 const CLOUDINARY_FONTS = [
   "Ariel",
   "Verdana",
@@ -29,41 +35,43 @@ export default function NewRecipe({
 }: {
   backgroundImages: Resource[];
 }) {
-  const [emotionalJourney, setEmotionalJourney] = useState({
-    from: "",
-    to: "",
-  });
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formState, setFormState] = useState<FormState>(initialFormState);
+
   const [generatedSteps, setGeneratedSteps] = useState("");
   const [stepsLength, setStepsLength] = useState(3);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const [imageUrl, setImageUrl] = useState<string>();
-  const [gradientChecked, setGradientChecked] = useState(true);
-  const [color, setColor] = useState("#ffffff");
-  const [bgColor, setBgColor] = useState("#000000");
+  const [publicId, setPublicId] = useState<string | null>(null);
+
   const [overlayConfig, setOverlayConfig] = useState<Record<
     string,
     any
   > | null>(null);
 
+  // oh boy...
   const stepArray = useMemo(() => {
     let output: string[] = [];
+
+    if (formState.steps.length > 0) {
+      output = [...formState.steps];
+    }
+
+    // TODO JT this is brittle, maybe do this transformation in the generation
     if (!!generatedSteps) {
       output = [...generatedSteps.split("\n").map(step => step.slice(3))];
     }
+    // extend the array if needed
     if (output.length < stepsLength) {
       output = [...output, ...Array(stepsLength - output.length).fill("")];
+
+      // shorten the array if needed
     } else if (output.length > stepsLength) {
       output = output.slice(0, stepsLength);
     }
-    return output;
-  }, [stepsLength, generatedSteps]);
 
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setGradientChecked(event.target.checked);
-    },
-    []
-  );
+    return output;
+  }, [stepsLength, generatedSteps, formState.steps]);
 
   const handleShare = useCallback(async () => {
     const imageSrc = imageContainerRef.current?.querySelector("img")?.src;
@@ -118,9 +126,9 @@ export default function NewRecipe({
 
   const prompt = `
   For moving from emotional state "${
-    emotionalJourney.from || "anxious"
+    formState.from || "anxious"
   }" to emotional state "${
-    emotionalJourney.to || "calm"
+    formState.to || "calm"
   }", identify the area of expertise that a coach would need to help with the request.
   Once the area of expertise is identified generate 3 steps for someone to do right now to move from state to state.
   Don't output the area of expertise, only return the steps. Make sure each step is under 100 characters and is clearly labeled "1. " and "2. "
@@ -169,7 +177,29 @@ export default function NewRecipe({
     }));
   };
 
-  const fieldsEnabled = !!imageUrl;
+  function handleLoadFromImage(url: string) {
+    if (!url) {
+      return;
+    }
+    const public_id = getPublicId(url);
+    const transformations = getTransformations(url);
+    const formState = convertEffectsToFormState(transformations);
+
+    // merge in the defaults
+    setFormState(_merge({}, initialFormState, formState));
+    if (public_id) {
+      setPublicId(public_id);
+    }
+
+    // trigger the form submit
+    _debounce(() => {
+      formRef.current?.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      );
+    }, 500)();
+  }
+
+  const fieldsEnabled = !!imageUrl || publicId;
   const canShare = fieldsEnabled && overlayConfig;
 
   return (
@@ -191,10 +221,16 @@ export default function NewRecipe({
             overlayConfig={overlayConfig}
             setImageUrl={setImageUrl}
             backgroundImages={backgroundImages}
+            inheritedPublicId={publicId}
+            handleLoadFromImage={handleLoadFromImage}
           />
         </div>
 
-        <form onSubmit={handleSubmit} className="container mx-auto">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="container mx-auto"
+        >
           <fieldset
             className={`flex flex-col md:grid md:grid-cols-2 gap-4 prose max-w-full mt-10 transition-opacity ${
               fieldsEnabled ? "opacity-100" : "opacity-25"
@@ -221,6 +257,13 @@ export default function NewRecipe({
                   id="title"
                   type="text"
                   placeholder="Optional Title"
+                  value={formState.title}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormState(prev => ({
+                      ...prev,
+                      title: event.target.value,
+                    }))
+                  }
                   className="input input-bordered w-full max-w-md"
                 />
               </div>
@@ -234,9 +277,9 @@ export default function NewRecipe({
                   type="text"
                   placeholder="From feeling"
                   className="input input-bordered w-full max-w-xs"
-                  value={emotionalJourney.from}
-                  onChange={event =>
-                    setEmotionalJourney(prev => ({
+                  value={formState.from}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormState(prev => ({
                       ...prev,
                       from: event.target.value,
                     }))
@@ -252,9 +295,9 @@ export default function NewRecipe({
                   type="text"
                   placeholder="To feeling"
                   className="input input-bordered w-full max-w-xs"
-                  value={emotionalJourney.to}
-                  onChange={event =>
-                    setEmotionalJourney(prev => ({
+                  value={formState.to}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormState(prev => ({
                       ...prev,
                       to: event.target.value,
                     }))
@@ -308,6 +351,7 @@ export default function NewRecipe({
                   </div>
                 </div>
               </div>
+
               {stepArray.map((step, index) => {
                 const stepIndex = index + 1;
                 return (
@@ -383,7 +427,16 @@ export default function NewRecipe({
                 <select
                   className="select w-full max-w-xs"
                   id="font"
-                  defaultValue="Source Sans Pro"
+                  value={formState.font.family}
+                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                    setFormState(prev => ({
+                      ...prev,
+                      font: {
+                        ...prev.font,
+                        family: event.target.value,
+                      },
+                    }))
+                  }
                 >
                   {CLOUDINARY_FONTS.map(font => (
                     <option key={font} value={font}>
@@ -407,7 +460,7 @@ export default function NewRecipe({
                     >
                       <div
                         className="rounded w-16 h-6 border"
-                        style={{ backgroundColor: color }}
+                        style={{ backgroundColor: formState.font.color }}
                       />
                     </label>
                     <div
@@ -415,16 +468,22 @@ export default function NewRecipe({
                       className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
                     >
                       <HexColorPicker
-                        color={color}
-                        //   onChange={value =>
-                        //     setFormState(prev => ({
-                        //       ...prev,
-                        //       color: { ...prev.color, value },
-                        //     }))
-                        //   }
-                        onChange={setColor}
+                        color={formState.font.color}
+                        onChange={(color: string) =>
+                          setFormState(prev => ({
+                            ...prev,
+                            font: {
+                              ...prev.font,
+                              color,
+                            },
+                          }))
+                        }
                       />
-                      <input type="hidden" id="color" value={color} />
+                      <input
+                        type="hidden"
+                        id="color"
+                        value={formState.font.color}
+                      />
                     </div>
                   </div>
                 </div>
@@ -442,11 +501,23 @@ export default function NewRecipe({
                   min="10"
                   max="100"
                   className="range range-xs"
-                  placeholder="40"
+                  value={formState.font.size}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormState(prev => ({
+                      ...prev,
+                      font: {
+                        ...prev.font,
+                        size: parseInt(event.target.value),
+                      },
+                    }))
+                  }
                 />
               </div>
 
-              <BackgroundTunables />
+              <BackgroundTunables
+                inheritedState={formState.background}
+                setFormState={setFormState}
+              />
             </div>
           </fieldset>
         </form>
@@ -462,5 +533,6 @@ export async function getStaticProps() {
     props: {
       backgroundImages: images,
     },
+    revalidate: 60 * 60 * 24,
   };
 }

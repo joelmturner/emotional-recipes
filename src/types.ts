@@ -136,3 +136,35 @@ export type LastUpdated = {
   tags_updated_at: string;
   updated_at: string;
 };
+
+export type BackgroundState = {
+  gradient: {
+    enabled: boolean;
+    value: number;
+  };
+  blur: {
+    enabled: boolean;
+    value: number;
+  };
+  opacity: {
+    enabled: boolean;
+    value: number;
+  };
+  bgColor: {
+    enabled: boolean;
+    value: string;
+  };
+};
+
+export type FormState = {
+  title: string;
+  from: string;
+  to: string;
+  steps: string[];
+  font: {
+    family: string;
+    color: string;
+    size: number;
+  };
+  background: BackgroundState;
+};
