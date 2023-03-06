@@ -3,7 +3,7 @@ import { getLatestSubmittedRecipes } from "@/lib/recipes";
 import { Share } from "@/components/Share";
 import { Card } from "@/components/Card";
 import Layout from "@/components/Layout";
-import { Recipe } from "@/types";
+import { Recipe } from "@/types/general";
 
 const CARD_ACTION_CLASSES =
   "btn btn-circle btn-ghost btn-xs text-neutral-content hover:bg-transparent hover:text-base-content transition-color";
@@ -15,7 +15,7 @@ export default function Recipes({ recipes }: { recipes: Recipe[] }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 container mx-auto w-full">
           {recipes.map((recipe, index) => (
             <div className="relative w-full h-full group" key={recipe.url}>
-              <Card key={recipe.url} recipe={recipe} eager={index < 3} />
+              <Card key={recipe.url} url={recipe.url} eager={index < 3} />
               <div className="flex gap-2 absolute top-3 right-3 duration-300 transition-opacity opacity-0 group-hover:opacity-100">
                 <div className="dropdown dropdown-left dropdown-start">
                   <label tabIndex={0} className={CARD_ACTION_CLASSES}>

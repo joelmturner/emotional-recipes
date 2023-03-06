@@ -1,8 +1,7 @@
 import { supabase } from "@/lib/api";
-import { Recipe } from "@/types";
+import { Recipe, CloudinaryAsset } from "@/types/general";
 import { moderationStates } from "./constants";
 import { v2 as cloudinary } from "cloudinary";
-import { Resource } from "../types";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -33,7 +32,7 @@ export async function getLatestSubmittedRecipes(
   return (results as Recipe[]) ?? null;
 }
 
-export async function getSavedBackgroundImages(): Promise<Resource[]> {
+export async function getSavedBackgroundImages(): Promise<CloudinaryAsset[]> {
   const { resources } = await cloudinary.search
     .expression(`folder:emotional-recipes && tags=${moderationStates.APPROVED}`)
     .sort_by("public_id", "desc")

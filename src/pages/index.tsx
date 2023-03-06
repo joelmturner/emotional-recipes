@@ -1,7 +1,7 @@
 import { Card } from "@/components/Card";
 import Layout from "@/components/Layout";
 import { getLatestSubmittedRecipes } from "@/lib/recipes";
-import { Recipe } from "@/types";
+import { Recipe } from "@/types/general";
 import Link from "next/link";
 
 export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
@@ -26,7 +26,7 @@ export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
       <div className="bg-base-300 w-full py-32">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 lg:gap-5 container mx-auto w-full">
           {recipes.map((recipe, index) => (
-            <Card key={recipe.url} recipe={recipe} eager={index === 0} />
+            <Card key={recipe.url} url={recipe.url} eager={index === 0} />
           ))}
         </div>
       </div>

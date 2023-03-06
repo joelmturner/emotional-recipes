@@ -6,7 +6,7 @@ import { HexColorPicker } from "react-colorful";
 import Layout from "@/components/Layout";
 import { Share } from "@/components/Share";
 import { initialFormState } from "@/lib/constants";
-import { FormData, FormState, Resource } from "@/types";
+import { FormData, FormState, CloudinaryAsset } from "@/types/general";
 import { getSavedBackgroundImages } from "@/lib/recipes";
 import { ImagePreview } from "@/components/ImagePreview";
 import { convertEffectsToFormState, getConfig } from "@/lib/utils";
@@ -33,7 +33,7 @@ const CLOUDINARY_FONTS = [
 export default function NewRecipe({
   backgroundImages,
 }: {
-  backgroundImages: Resource[];
+  backgroundImages: CloudinaryAsset[];
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);

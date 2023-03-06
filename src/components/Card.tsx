@@ -1,16 +1,15 @@
-import { Recipe } from "@/types";
 import Image from "next/image";
 
 export function Card({
-  recipe,
+  url,
   eager = false,
 }: {
-  recipe: Recipe;
+  url: string | null;
   eager: boolean;
 }) {
-  return (
+  return !url ? null : (
     <Image
-      src={recipe.url}
+      src={url}
       width="533"
       height="300"
       alt="emotional recipe image"

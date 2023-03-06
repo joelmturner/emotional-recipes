@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { Dialog } from "@reach/dialog";
-import { Resource, UploadResult } from "@/types";
+import { CloudinaryAsset, UploadResult } from "@/types/general";
 import "@reach/dialog/styles.css";
 
 type ImagePreviewProps = {
   overlayConfig?: Record<string, any> | null;
-  backgroundImages: Resource[];
+  backgroundImages: CloudinaryAsset[];
   inheritedPublicId?: string | null;
   setImageUrl: (url: string) => void;
   handleLoadFromImage: (url: string) => void;
@@ -36,7 +36,7 @@ export function ImagePreview({
     widget.close();
   }
 
-  function handleSelectImage(image: Resource) {
+  function handleSelectImage(image: CloudinaryAsset) {
     setActiveImage(image.public_id);
     setImageUrl(image.secure_url);
     setShowDialog(false);

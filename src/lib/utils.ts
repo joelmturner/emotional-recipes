@@ -1,4 +1,4 @@
-import { CheckboxValue, FormData, FormState } from "@/types";
+import { CheckboxValue, FormData, FormState } from "@/types/general";
 import _set from "lodash/set";
 
 export const IMAGE_SIZE = {

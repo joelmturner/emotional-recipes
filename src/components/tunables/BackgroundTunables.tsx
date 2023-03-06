@@ -1,5 +1,5 @@
 import { initialBackgroundState } from "@/lib/constants";
-import { BackgroundState, FormState } from "@/types";
+import { BackgroundState, FormState } from "@/types/general";
 import { Dispatch, SetStateAction } from "react";
 import { HexColorPicker } from "react-colorful";
 

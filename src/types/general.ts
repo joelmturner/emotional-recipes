@@ -1,15 +1,15 @@
-export type Recipe = {
-  date: number;
-  url: string;
-  created_at: string;
-  id: number;
-};
+import { moderationStates } from "../lib/constants";
+import { Database } from "./supabase";
+
+export type Recipe = Database["public"]["Tables"]["recipes"]["Row"];
 
 // not official types, just for example
 export interface UploadResult {
   event: "success" | string;
   info: UploadResultInfo;
 }
+
+export type ModerationStates = keyof typeof moderationStates;
 
 export interface UploadResultInfo {
   id: string;
@@ -65,7 +65,7 @@ export type CloudinarySearchResponse = {
   time: number;
   aggregations: Aggregations;
   next_cursor: string;
-  resources: Resource[];
+  resources: CloudinaryAsset[];
 };
 
 export type Aggregations = {
@@ -79,7 +79,7 @@ export type Format = {
   doc: number;
 };
 
-export type Resource = {
+export type CloudinaryAsset = {
   asset_id: string;
   public_id: string;
   folder: string;
