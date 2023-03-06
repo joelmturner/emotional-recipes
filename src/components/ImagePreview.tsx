@@ -63,7 +63,7 @@ export function ImagePreview({
         />
       ) : null}
 
-      <div className="btn-group">
+      <div className="btn-group btn-group-vertical md:btn-group-horizontal">
         <CldUploadWidget
           uploadPreset="ixvy6wbq"
           options={
@@ -85,7 +85,9 @@ export function ImagePreview({
             }
             return (
               <button
-                className={`btn ${activeImage ? "btn-ghost" : "btn-primary"}`}
+                className={`btn !-mt-0 !rounded-b-none !rounded-t-md md:!rounded-r-none md:!rounded-l-md ${
+                  activeImage ? "btn-ghost" : "btn-primary"
+                }`}
                 onClick={handleOnClick}
               >
                 {activeImage ? "Upload a new image" : "Upload an image"}
@@ -94,16 +96,18 @@ export function ImagePreview({
           }}
         </CldUploadWidget>
         <button
-          className={`btn ${activeImage ? "btn-ghost" : "btn-secondary"}`}
+          className={`btn w-full md:w-auto ${
+            activeImage ? "btn-ghost" : "btn-secondary"
+          }`}
           onClick={() => setShowDialog(true)}
         >
           {activeImage ? "Choose a new image" : "Choose Image"}
         </button>
         <div className="dropdown dropdown-top">
           <button
-            className={`btn ${
+            className={`btn !-mt-0 w-full md:w-auto ${
               activeImage ? "btn-ghost" : "btn-accent"
-            } !rounded-l-none !rounded-btn`}
+            } !rounded-t-none !rounded-b-md md:!rounded-l-none md:!rounded-r-md`}
             onClick={() => pastedUrlInput.current?.focus()}
           >
             {activeImage ? "Paste a new image URL" : "Paste image URL"}

@@ -249,7 +249,7 @@ export default function NewRecipe({
           >
             <div className="flex justify-center col-span-2">
               <button
-                className="btn btn-outline "
+                className="btn btn-outline"
                 type="submit"
                 disabled={!fieldsEnabled}
               >
@@ -257,7 +257,7 @@ export default function NewRecipe({
               </button>
             </div>
 
-            <div className="flex flex-col gap-4 ">
+            <div className="flex flex-col gap-4">
               <h3>Optional details</h3>
               <div className="form-control w-full max-w-md">
                 <label className="label" htmlFor="title">
@@ -327,7 +327,7 @@ export default function NewRecipe({
                   >
                     {!!generatedSteps ? "Regenerate Steps" : "Generate Steps"}
                   </button>
-                  <div className="dropdown dropdown-right dropdown-end">
+                  <div className="dropdown dropdown-bottom dropdown-left md:dropdown-right md:dropdown-end">
                     <label
                       tabIndex={0}
                       className="btn btn-circle btn-ghost btn-xs text-info"
@@ -348,7 +348,7 @@ export default function NewRecipe({
                     </label>
                     <div
                       tabIndex={0}
-                      className="card compact dropdown-content shadow bg-base-300 rounded-box w-64"
+                      className="card compact dropdown-content shadow bg-base-300 rounded-box w-32 md:w-64"
                     >
                       <div className="card-body not-prose">
                         <h2 className="card-title">AI generated</h2>
@@ -382,7 +382,7 @@ export default function NewRecipe({
                 );
               })}
 
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
                 <button
                   className="btn btn-xs md:btn-sm gap-2"
                   onClick={() => setStepsLength(prev => prev + 1)}

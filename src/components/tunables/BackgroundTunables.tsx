@@ -105,7 +105,7 @@ export function BackgroundTunables({
         <label className="label w-full md:w-1/4">Background color</label>
         {renderCheckbox("bgColor")}
         <div
-          className={`dropdown dropdown-top ${
+          className={`dropdown dropdown-top dropdown-left lg:dropdown-end ${
             inheritedState.bgColor.enabled
               ? "opacity-100"
               : "opacity-20 pointer-events-none"
