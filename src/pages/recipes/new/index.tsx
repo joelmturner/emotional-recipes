@@ -1,17 +1,17 @@
-import { ImagePreview } from "@/components/ImagePreview";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import _merge from "lodash/merge";
+import _debounce from "lodash/debounce";
+import { HexColorPicker } from "react-colorful";
 import Layout from "@/components/Layout";
 import { Share } from "@/components/Share";
-import { BackgroundTunables } from "@/components/tunables/BackgroundTunables";
 import { initialFormState } from "@/lib/constants";
+import { FormData, FormState, Resource } from "@/types";
 import { getSavedBackgroundImages } from "@/lib/recipes";
+import { ImagePreview } from "@/components/ImagePreview";
 import { convertEffectsToFormState, getConfig } from "@/lib/utils";
-import { FormData, FormState } from "@/types";
 import { getPublicId, getTransformations } from "@cloudinary-util/util";
-import _merge from "lodash/merge";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { HexColorPicker } from "react-colorful";
-import { Resource } from "../../../types";
-import _debounce from "lodash/debounce";
+import { BackgroundTunables } from "@/components/tunables/BackgroundTunables";
 
 // https://cloudinary.com/documentation/media_editor_reference#textoverlaysprops
 // update: better list here: https://www.alanwsmith.com/posts/google-fonts-you-can-use-in-cloudinary-transformations--26mqi8ovvtka
@@ -48,6 +48,16 @@ export default function NewRecipe({
     string,
     any
   > | null>(null);
+  const router = useRouter();
+
+  // handle loading recipe by query param
+  useEffect(() => {
+    const passedUrl =
+      router?.query?.url && decodeURIComponent(router.query.url as string);
+    if (passedUrl) {
+      handleLoadFromImage(passedUrl);
+    }
+  }, []);
 
   // oh boy...
   const stepArray = useMemo(() => {
@@ -214,7 +224,7 @@ export default function NewRecipe({
         </div>
 
         <div
-          className="flex flex-col justify-center h-full items-center min-h-[30vh]"
+          className="flex flex-col justify-center h-full items-center min-h-[30vh] bg-base-300 w-full py-32"
           ref={imageContainerRef}
         >
           <ImagePreview
@@ -374,7 +384,7 @@ export default function NewRecipe({
 
               <div className="flex gap-4">
                 <button
-                  className="btn gap-2 btn-xs md:btn-sm"
+                  className="btn btn-xs md:btn-sm gap-2"
                   onClick={() => setStepsLength(prev => prev + 1)}
                 >
                   <svg
@@ -395,7 +405,7 @@ export default function NewRecipe({
                 </button>
 
                 <button
-                  className="btn gap-2 btn-xs md:btn-sm"
+                  className="btn btn-xs md:btn-sm gap-2"
                   onClick={() => setStepsLength(prev => prev - 1)}
                   disabled={stepsLength < 2}
                 >

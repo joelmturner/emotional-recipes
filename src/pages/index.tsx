@@ -8,9 +8,9 @@ export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
   return (
     <Layout>
       <div className="grid grid-rows-[50vh_min-content_auto] gap-6">
-        <div className="hero h-full">
-          <div className="hero-content w-full flex-col gap-16">
-            <div className="w-full md:w-2/3">
+        <section className="hero h-full">
+          <div className="hero-content container flex-col gap-16">
+            <div className="w-full md:w-2/3 text-center">
               <h1 className="text-5xl font-bold">Emotional Wayfinding</h1>
               <p className="py-6">
                 A tool to help navigate stormy waters back to calm seas.
@@ -20,10 +20,10 @@ export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
               </Link>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
-      <div className="bg-base-200 w-full py-6 md:py-12">
+      <div className="bg-base-300 w-full py-32">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 lg:gap-5 container mx-auto w-full">
           {recipes.map((recipe, index) => (
             <Card key={recipe.url} recipe={recipe} eager={index === 0} />
@@ -39,26 +39,33 @@ export default function Home({ recipes = [] }: { recipes: Recipe[] }) {
           for you in each case then add them to your own recipe.
         </p>
 
-        <h2>How it came about?</h2>
+        <h2>How it came about</h2>
         <p>
-          When I was working on trying to recognize and improve my behaviors I
-          noticed that I could identify that I was in a rough state of emotion
-          but couldn't recall what to do to move through it more gracefully.
+          Howdy! Have you ever found yourself in a rough emotional state, but
+          couldn't remember what to do to get out of it? Well, that's been me
+          quite often. Trying to recall helpful tips in a heightened emotional
+          state can be rough.
         </p>
+
         <p>
-          In the clarity after one such bout I ended up writing down, on an
-          index card, things that I know are helpful in that state. This card
-          was in my notebook which I carried everywhere so I was able to glance
-          at it every time I was in that state.
+          One day, I decided to jot down some helpful strategies on an index
+          card which I kept in my notebook. Whenever I found myself in a tough
+          spot, I would refer to this card and it always helped me to move
+          through my emotions more gracefully.
         </p>
+
         <p>
-          After a few weeks I started differentiating some of my states so I
-          created slight variations of that card. These became my emotional
-          recipes.
+          As time passed, I began to differentiate between different emotional
+          states and created variations of the original index card. These
+          variations became my personal emotional recipes!
         </p>
+
         <p>
-          This site is a way to explore creating these cards digitally while
-          playing with some cool tech.
+          I'm thrilled to share this, a way to create digital emotional recipes.
+          Feel free to come up with{" "}
+          <Link href="/recipes/new">personalized cards</Link> or use the{" "}
+          <Link href="/recipes">previously created cards</Link> to help you
+          through any tough emotions you may face.
         </p>
       </div>
     </Layout>

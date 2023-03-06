@@ -1,7 +1,7 @@
-import { Resource, UploadResult } from "@/types";
-import { Dialog } from "@reach/dialog";
-import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { useEffect, useRef, useState } from "react";
+import { CldImage, CldUploadWidget } from "next-cloudinary";
+import { Dialog } from "@reach/dialog";
+import { Resource, UploadResult } from "@/types";
 import "@reach/dialog/styles.css";
 
 type ImagePreviewProps = {
@@ -113,8 +113,10 @@ export function ImagePreview({
             className="card compact dropdown-content shadow bg-base-300 rounded-box w-min-content"
           >
             <div className="card-body not-prose">
-              <h2 className="card-title">Enter Image URL</h2>
-              <div className="flex gap-3 p-3">
+              <div className="text-l card-subtitle">
+                Enter Previously Created URL
+              </div>
+              <div className="flex gap-3">
                 <input ref={pastedUrlInput} id="baseURL" />
                 <button
                   className="btn btn-primary btn-sm"

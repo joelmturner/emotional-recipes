@@ -50,7 +50,7 @@ export function Share({
     <div className="flex flex-col gap-2 items-end">
       {useButton ? (
         <button
-          className="btn gap-2"
+          className="btn btn-sm gap-2"
           onClick={handleOpenShare}
           disabled={disabled}
         >

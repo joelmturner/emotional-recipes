@@ -6,8 +6,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="grid grid-rows-[min-content_1fr_min-content] gap-3 antialiased h-screen text-base-content overflow-y-auto">
-        <div className="navbar px-0 border border-b border-base-300">
+      <div className="grid grid-rows-[min-content_1fr_min-content] antialiased h-screen text-base-content overflow-y-auto">
+        <div className="navbar px-0">
           <div className="flex gap-4 items-center justify-between container mx-auto">
             <Link
               href="/"
@@ -54,10 +54,42 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <p className="text-xs text-neutral-content justify-end">
-              Built with [Next.js](https://nextjs.org/),
-              [DaisyUI](https://daisyui.com/) and [Tailwind
-              CSS](https://tailwindcss.com/), and
-              [Cloudinary](https://cloudinary.com/)
+              Built with{" "}
+              <a
+                className="link link-hover"
+                href="https://nextjs.org/"
+                rel="noopener"
+                target="_blank"
+              >
+                Next.js
+              </a>
+              ,
+              <a
+                className="link link-hover"
+                href="https://daisyui.com/"
+                rel="noopener"
+                target="_blank"
+              >
+                DaisyUI
+              </a>{" "}
+              and{" "}
+              <a
+                className="link link-hover"
+                href="https://tailwindcss.com/"
+                rel="noopener"
+                target="_blank"
+              >
+                Tailwind CSS
+              </a>
+              , and{" "}
+              <a
+                className="link link-hover"
+                href="https://cloudinary.com/"
+                rel="noopener"
+                target="_blank"
+              >
+                Cloudinary
+              </a>
             </p>
           </div>
         </footer>
