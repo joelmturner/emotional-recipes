@@ -357,3 +357,9 @@ export function convertEffectsToFormState(effects: string[][]): FormState {
   const convertedEffects = convertRawEffectsToConvertedEffects(effects);
   return convertConvertedEffectsToFormState(convertedEffects);
 }
+
+// adds a flag that allows the user to download the image as a recipe
+export function downloadCloudinaryUrl(url: string) {
+  const splitUrl = url.split("upload");
+  return `${splitUrl[0]}upload/fl_attachment:recipe${splitUrl[1]}`;
+}
