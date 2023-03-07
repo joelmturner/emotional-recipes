@@ -1,3 +1,5 @@
+import { ModerationStates } from "./general";
+
 export type Json =
   | string
   | number
@@ -14,7 +16,7 @@ export interface Database {
           created_at: string | null;
           featured: boolean;
           id: number;
-          moderation: string;
+          moderation: ModerationStates;
           url: string;
           user_id: string | null;
         };
@@ -22,7 +24,7 @@ export interface Database {
           created_at?: string | null;
           featured?: boolean;
           id?: number;
-          moderation?: string;
+          moderation?: ModerationStates;
           url?: string;
           user_id?: string | null;
         };
@@ -30,7 +32,7 @@ export interface Database {
           created_at?: string | null;
           featured?: boolean;
           id?: number;
-          moderation?: string;
+          moderation?: ModerationStates;
           url?: string;
           user_id?: string | null;
         };

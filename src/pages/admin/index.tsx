@@ -1,6 +1,6 @@
 import { Card } from "@/components/Card";
 import Layout from "@/components/Layout";
-import { ModerationStates, Recipe } from "@/types/general";
+import { ModerationStates, Recipe, RecipeColumns } from "@/types/general";
 import {
   createServerSupabaseClient,
   User,
@@ -20,10 +20,14 @@ export default function Admin({ user }: { user: User }) {
     }
   }
 
-  async function updateRecipe(recipe: Recipe, status: ModerationStates) {
+  async function updateRecipe(
+    recipe: Recipe,
+    key: RecipeColumns,
+    value: boolean | string | number | ModerationStates
+  ) {
     const { error } = await supabaseClient
       .from("recipes")
-      .update({ moderation: status, featured: recipe.featured })
+      .update({ [key]: value })
       .eq("id", recipe.id)
       .select();
 
@@ -34,8 +38,32 @@ export default function Admin({ user }: { user: User }) {
 
     setRecipes(prev => {
       const index = prev.findIndex(r => r.id === recipe.id);
-      const newRecipe = _merge({}, recipe, { moderation: status });
-      return [...prev.slice(0, index), newRecipe, ...prev.slice(index + 1)];
+      const newRecipe = _merge({}, recipe, { [key]: value });
+      return [
+        ...prev.slice(0, index),
+        newRecipe,
+        ...prev.slice(index + 1),
+      ].sort((a, b) => a.id - b.id);
+    });
+  }
+
+  async function handleDeleteRecipe(recipe: Recipe) {
+    const { error } = await supabaseClient
+      .from("recipes")
+      .delete()
+      .eq("id", recipe.id)
+      .select();
+
+    if (error) {
+      console.error("error", error);
+      return;
+    }
+
+    setRecipes(prev => {
+      const index = prev.findIndex(r => r.id === recipe.id);
+      return [...prev.slice(0, index), ...prev.slice(index + 1)].sort(
+        (a, b) => a.id - b.id
+      );
     });
   }
 
@@ -66,14 +94,68 @@ export default function Admin({ user }: { user: User }) {
               <div className="card w-full bg-base-300 shadow-xl">
                 <Card key={recipe.url} url={recipe.url} eager={false} />
                 <div className="card-body py-4">
-                  <div className="flex gap-3 items-center">
-                    <p>id: {recipe.id}</p>
-                    <div className="btn-group transition-opacity opacity-30 group-hover:opacity-100">
+                  <div className="flex gap-3 items-center justify-between transition-opacity opacity-30 group-hover:opacity-100">
+                    <div className="flex gap-3 items-center">
+                      <label>featured</label>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-sm"
+                        checked={recipe.featured}
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>
+                        ) =>
+                          updateRecipe(recipe, "featured", event.target.checked)
+                        }
+                      />
+                    </div>
+
+                    <div className="dropdown dropdown-top">
+                      <label tabIndex={0} className="btn btn-sm">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-4 h-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                          />
+                        </svg>
+                      </label>
+                      <div
+                        tabIndex={0}
+                        className="card compact dropdown-content shadow bg-base-300 rounded-box w-min-content md:w-64"
+                      >
+                        <div className="card-body not-prose">
+                          <div className="text-xl">
+                            Are you sure you would like to delete this?
+                          </div>
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => handleDeleteRecipe(recipe)}
+                            disabled={
+                              recipe.featured ||
+                              recipe.moderation === "APPROVED"
+                            }
+                          >
+                            Yes, delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="btn-group ">
                       <button
-                        className={`btn ${
+                        className={`btn btn-sm ${
                           recipe.moderation === "REJECTED" ? "btn-error" : ""
                         }`}
-                        onClick={() => updateRecipe(recipe, "REJECTED")}
+                        onClick={() =>
+                          updateRecipe(recipe, "moderation", "REJECTED")
+                        }
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -92,10 +174,12 @@ export default function Admin({ user }: { user: User }) {
                       </button>
 
                       <button
-                        className={`btn ${
+                        className={`btn btn-sm ${
                           recipe.moderation === "PENDING" ? "btn-info" : ""
                         }`}
-                        onClick={() => updateRecipe(recipe, "PENDING")}
+                        onClick={() =>
+                          updateRecipe(recipe, "moderation", "PENDING")
+                        }
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -114,10 +198,12 @@ export default function Admin({ user }: { user: User }) {
                       </button>
 
                       <button
-                        className={`btn ${
+                        className={`btn btn-sm ${
                           recipe.moderation === "APPROVED" ? "btn-success" : ""
                         }`}
-                        onClick={() => updateRecipe(recipe, "APPROVED")}
+                        onClick={() =>
+                          updateRecipe(recipe, "moderation", "APPROVED")
+                        }
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

@@ -2,6 +2,8 @@ import { moderationStates } from "../lib/constants";
 import { Database } from "./supabase";
 
 export type Recipe = Database["public"]["Tables"]["recipes"]["Row"];
+export type RecipeColumns =
+  keyof Database["public"]["Tables"]["recipes"]["Row"];
 
 // not official types, just for example
 export interface UploadResult {
