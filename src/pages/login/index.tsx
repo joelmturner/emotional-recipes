@@ -14,9 +14,9 @@ const LoginPage = () => {
         <div className="max-w-xs md:max-w-md mt-6 mx-auto">
           <Auth
             redirectTo={
-              process.env.NODE_ENV === "production"
-                ? "https://emotional-recipes.com"
-                : "http://localhost:3000/"
+              process.env.NODE_ENV === "development"
+                ? "http://localhost:3000/"
+                : "https://emotional-recipes.com"
             }
             appearance={{ theme: ThemeSupa }}
             supabaseClient={supabaseClient}
