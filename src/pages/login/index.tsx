@@ -20,7 +20,7 @@ const LoginPage = () => {
             }
             appearance={{ theme: ThemeSupa }}
             supabaseClient={supabaseClient}
-            providers={["google", "github"]}
+            providers={[]}
             socialLayout="horizontal"
           />
         </div>
