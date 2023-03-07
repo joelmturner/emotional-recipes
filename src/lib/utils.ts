@@ -250,7 +250,7 @@ const EFFECT_NAME_TO_KEY = {
 };
 
 function convertTextToHumanReadable(text: string) {
-  return decodeURI(text).replace(/%0A|%20/g, " ");
+  return decodeURI(text).replace(/%0A|%20|%2C/g, " ");
 }
 
 const LETTER_SPACING_PATTERN = /letter_spacing_(\d+)/;
