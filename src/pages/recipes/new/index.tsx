@@ -12,6 +12,11 @@ import { ImagePreview } from "@/components/ImagePreview";
 import { convertEffectsToFormState, getConfig } from "@/lib/utils";
 import { getPublicId, getTransformations } from "@cloudinary-util/util";
 import { BackgroundTunables } from "@/components/tunables/BackgroundTunables";
+import {
+  createParser,
+  ParsedEvent,
+  ReconnectInterval,
+} from "eventsource-parser";
 
 // https://cloudinary.com/documentation/media_editor_reference#textoverlaysprops
 // update: better list here: https://www.alanwsmith.com/posts/google-fonts-you-can-use-in-cloudinary-transformations--26mqi8ovvtka
@@ -69,7 +74,7 @@ export default function NewRecipe({
 
     // TODO JT this is brittle, maybe do this transformation in the generation
     if (!!generatedSteps) {
-      output = [...generatedSteps.split("\n").map(step => step.slice(3))];
+      output = [...generatedSteps.split("\n").map((step) => step.slice(3))];
     }
     // extend the array if needed
     if (output.length < stepsLength) {
@@ -102,13 +107,13 @@ export default function NewRecipe({
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     const keys = Object.keys(event.target).filter(
-      key => !Number.isNaN(parseInt(key))
+      (key) => !Number.isNaN(parseInt(key))
     );
 
     const steps: string[] = [];
     const output = {} as FormData & Record<string, string>;
 
-    keys.sort().forEach(key => {
+    keys.sort().forEach((key) => {
       const el = event.target[`${key}`];
       if (el.id?.includes("step")) {
         steps.push(el?.value);
@@ -169,19 +174,32 @@ export default function NewRecipe({
       return;
     }
 
+    const onParseGPT = (event: ParsedEvent | ReconnectInterval) => {
+      if (event.type === "event") {
+        const data = event.data;
+        try {
+          const text = JSON.parse(data).text ?? "";
+          setGeneratedSteps((prev) => prev + text);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
     const reader = data.getReader();
     const decoder = new TextDecoder();
+    const parser = createParser(onParseGPT);
     let done = false;
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      setGeneratedSteps(prev => prev + chunkValue);
+      parser.feed(chunkValue);
     }
 
     setStepsLength(3);
-    setOverlayConfig(prev => ({
+    setOverlayConfig((prev) => ({
       ...prev,
       steps: generatedSteps.split("\n"),
     }));
@@ -269,7 +287,7 @@ export default function NewRecipe({
                   placeholder="Optional Title"
                   value={formState.title}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormState(prev => ({
+                    setFormState((prev) => ({
                       ...prev,
                       title: event.target.value,
                     }))
@@ -289,7 +307,7 @@ export default function NewRecipe({
                   className="input input-bordered w-full max-w-xs"
                   value={formState.from}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormState(prev => ({
+                    setFormState((prev) => ({
                       ...prev,
                       from: event.target.value,
                     }))
@@ -307,7 +325,7 @@ export default function NewRecipe({
                   className="input input-bordered w-full max-w-xs"
                   value={formState.to}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormState(prev => ({
+                    setFormState((prev) => ({
                       ...prev,
                       to: event.target.value,
                     }))
@@ -385,7 +403,7 @@ export default function NewRecipe({
               <div className="flex flex-col md:flex-row gap-4">
                 <button
                   className="btn btn-xs md:btn-sm gap-2"
-                  onClick={() => setStepsLength(prev => prev + 1)}
+                  onClick={() => setStepsLength((prev) => prev + 1)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -406,7 +424,7 @@ export default function NewRecipe({
 
                 <button
                   className="btn btn-xs md:btn-sm gap-2"
-                  onClick={() => setStepsLength(prev => prev - 1)}
+                  onClick={() => setStepsLength((prev) => prev - 1)}
                   disabled={stepsLength < 2}
                 >
                   <svg
@@ -439,7 +457,7 @@ export default function NewRecipe({
                   id="font"
                   value={formState.font.family}
                   onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                    setFormState(prev => ({
+                    setFormState((prev) => ({
                       ...prev,
                       font: {
                         ...prev.font,
@@ -448,7 +466,7 @@ export default function NewRecipe({
                     }))
                   }
                 >
-                  {CLOUDINARY_FONTS.map(font => (
+                  {CLOUDINARY_FONTS.map((font) => (
                     <option key={font} value={font}>
                       {font}
                     </option>
@@ -480,7 +498,7 @@ export default function NewRecipe({
                       <HexColorPicker
                         color={formState.font.color}
                         onChange={(color: string) =>
-                          setFormState(prev => ({
+                          setFormState((prev) => ({
                             ...prev,
                             font: {
                               ...prev.font,
@@ -513,7 +531,7 @@ export default function NewRecipe({
                   className="range range-xs"
                   value={formState.font.size}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormState(prev => ({
+                    setFormState((prev) => ({
                       ...prev,
                       font: {
                         ...prev.font,

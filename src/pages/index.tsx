@@ -77,7 +77,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      recipes,
+      recipes: recipes  ?? null,
     },
   };
 }

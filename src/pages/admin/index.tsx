@@ -13,6 +13,7 @@ import { Database } from "src/types/supabase";
 export default function Admin({ user }: { user: User }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const supabaseClient = useSupabaseClient<Database>();
+
   async function getRecipes() {
     const { data } = await supabaseClient.from("recipes").select("*");
     if (data) {
